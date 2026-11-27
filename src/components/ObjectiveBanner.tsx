@@ -12,11 +12,7 @@ export function ObjectiveBanner({ title, objective, completed = false }: Objecti
     >
       <h1 className="objective-title">{title}</h1>
       <p className="objective-text">
-        <span className="objective-status">
-          <span aria-hidden="true">{completed ? '✔ ' : '◎ '}</span>
-          {completed ? 'Complete:' : 'Goal:'}
-        </span>{' '}
-        {objective}
+        <span className="objective-status">{completed ? 'Complete:' : 'Goal:'}</span> {objective}
       </p>
     </section>
   )

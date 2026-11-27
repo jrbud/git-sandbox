@@ -12,7 +12,6 @@ import {
   isSectionUnlocked,
   MASTERY_LABELS,
   sectionProgress,
-  type Mastery,
 } from '../state/progression'
 
 export interface LevelSelectProps {
@@ -20,14 +19,6 @@ export interface LevelSelectProps {
   progress: Progress
   onSelectLevel(levelId: string): void
   onFreePlay(): void
-}
-
-/** Each mastery state has its own symbol as well as its own colour. */
-const MASTERY_ICONS: Record<Mastery, string> = {
-  'not-started': '○',
-  'in-progress': '◐',
-  mastered: '★',
-  'mastered-with-assistance': '☆',
 }
 
 function LevelNode({
@@ -55,9 +46,9 @@ function LevelNode({
       aria-label={`${label}: ${level.title}. ${state}.`}
       title={`${level.title} (${state})`}
     >
-      <span aria-hidden="true">{done ? '✔' : unlocked ? '▶' : '🔒'}</span>
-      <span className="map-node-label" aria-hidden="true">
+      <span aria-hidden="true">
         {label}
+        {state !== 'Open' && <span className="map-node-state"> {state.toLowerCase()}</span>}
       </span>
     </button>
   )
@@ -89,7 +80,6 @@ function ConceptCluster({
           <span className="map-concept-number">{index + 1}.</span> {concept.title}
         </h3>
         <span className={`mastery mastery-${mastery}`} data-testid="mastery">
-          <span aria-hidden="true">{MASTERY_ICONS[mastery]} </span>
           {locked ? 'Locked' : MASTERY_LABELS[mastery]}
         </span>
       </div>
@@ -122,12 +112,8 @@ export function LevelSelect({ catalog, progress, onSelectLevel, onFreePlay }: Le
     <div className="level-select">
       <div className="level-select-intro">
         <h1>Choose a level</h1>
-        <p>
-          Each concept starts with a lesson. Finish it to unlock the next concept and the practice
-          levels. Complete every practice level without hints to master a concept.
-        </p>
         <button type="button" className="toolbar-button" onClick={onFreePlay}>
-          <span aria-hidden="true">🧪 </span>Free Play
+          Free Play
         </button>
       </div>
       {catalog.sections.map((section) => {
@@ -142,7 +128,6 @@ export function LevelSelect({ catalog, progress, onSelectLevel, onFreePlay }: Le
           >
             <header className="map-section-header">
               <h2 id={headingId}>
-                <span aria-hidden="true">{section.icon} </span>
                 {section.title}
                 {!unlocked && <span className="map-locked-label"> (locked)</span>}
               </h2>

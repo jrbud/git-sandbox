@@ -55,7 +55,7 @@ describe('navigation', () => {
 
     // Both practice levels done without hints: mastered.
     await user.click(screen.getAllByRole('button', { name: /Back to map/ })[0])
-    expect(within(cluster('alpha')).getByTestId('mastery')).toHaveTextContent('★ Mastered')
+    expect(within(cluster('alpha')).getByTestId('mastery')).toHaveTextContent(/^Mastered$/)
     expect(await store.load()).toEqual({
       version: 1,
       levels: {

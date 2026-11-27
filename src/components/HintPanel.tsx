@@ -27,10 +27,7 @@ export function HintPanel({ hints, kind, shown, onReveal }: HintPanelProps) {
       ) : (
         <>
           {kind === 'variation' && shown === 0 && (
-            <p className="hint-note">
-              Using a hint on a practice level still counts, but marks it as mastered with
-              assistance.
-            </p>
+            <p className="hint-note">Hints count against mastery.</p>
           )}
           {shown > 0 && (
             <ol className="hint-list" aria-live="polite">
@@ -47,7 +44,6 @@ export function HintPanel({ hints, kind, shown, onReveal }: HintPanelProps) {
             onClick={onReveal}
             disabled={remaining === 0}
           >
-            <span aria-hidden="true">💡 </span>
             {remaining === 0 ? 'No more hints' : shown === 0 ? 'Show a hint' : 'Show next hint'}
           </button>
         </>

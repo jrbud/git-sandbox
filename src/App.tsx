@@ -81,9 +81,7 @@ function App({ catalog: catalogProp, store: storeProp }: AppProps) {
           Skip to content
         </a>
         <header className="app-header">
-          <p className="app-title">
-            <span aria-hidden="true">⎇ </span>Git Quest
-          </p>
+          <p className="app-title">Git Quest</p>
           <ThemeToggle />
         </header>
         <Game catalog={catalog} />

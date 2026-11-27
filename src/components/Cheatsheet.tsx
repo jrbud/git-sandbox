@@ -16,7 +16,6 @@ export function Cheatsheet({ entries }: { entries?: CheatsheetEntry[] }) {
         aria-controls={panelId}
         onClick={() => setOpen((value) => !value)}
       >
-        <span aria-hidden="true">📖 </span>
         {open ? 'Hide cheatsheet' : 'Cheatsheet'}
       </button>
       {open && (

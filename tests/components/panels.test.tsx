@@ -170,9 +170,7 @@ describe('ObjectiveBanner', () => {
     expect(screen.getByRole('heading', { name: 'First commit' })).toBeInTheDocument()
     expect(screen.getByText(/Commit notes\.txt\./)).toHaveTextContent('Goal: Commit notes.txt.')
     rerender(<ObjectiveBanner title="First commit" objective="Commit notes.txt." completed />)
-    expect(screen.getByText(/Commit notes\.txt\./)).toHaveTextContent(
-      '✔ Complete: Commit notes.txt.',
-    )
+    expect(screen.getByText(/Commit notes\.txt\./)).toHaveTextContent('Complete: Commit notes.txt.')
   })
 })
 

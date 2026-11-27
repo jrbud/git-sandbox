@@ -47,7 +47,6 @@ export interface Section {
   id: string
   title: string
   description: string
-  icon: string
   /** Concepts in play order; each one's main level unlocks the next concept. */
   conceptIds: string[]
   unlock: SectionUnlock

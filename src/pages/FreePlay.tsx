@@ -16,14 +16,13 @@ export function FreePlay({ onBackToMap }: { onBackToMap?(): void }) {
         <section className="objective-banner" aria-label="Free Play">
           <h1 className="objective-title">Free Play</h1>
           <p className="objective-text">
-            Every command is unlocked and nothing is graded. Start with <code>git init</code>, or
-            copy the practice remote with <code>git clone {PLAYGROUND_URL}</code>.
+            Practice remote: <code>{PLAYGROUND_URL}</code>
           </p>
         </section>
         <div className="play-toolbar" role="toolbar" aria-label="Free Play tools">
           {onBackToMap && (
             <button type="button" className="toolbar-button" onClick={onBackToMap}>
-              <span aria-hidden="true">← </span>Back to map
+              Back to map
             </button>
           )}
           <ResetButton onReset={() => dispatch({ type: 'reset' })} />

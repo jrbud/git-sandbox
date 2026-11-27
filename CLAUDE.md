@@ -87,7 +87,7 @@ This is the most important constraint for Claude Code: **build the MVP with only
 
 - A new level = a new entry in a level-data file (or new JSON file), with no engine code changes, as long as it only uses already-supported git commands.
 - A new git command = one addition to the command-handler registry (Section 5) plus updated whitelist options — isolated from level content.
-- A new Section = a new folder/namespace of level files plus one entry in a sections manifest (id, title, description, icon, ordered level list, unlock requirement). The level-select UI should render sections and locks from this manifest, not from hardcoded UI.
+- A new Section = a new folder/namespace of level files plus one entry in a sections manifest (id, title, description, ordered level list, unlock requirement). The level-select UI should render sections and locks from this manifest, not from hardcoded UI.
 - Keep the "support plan" (Section 2's objectives) in sync with the level manifest so coverage gaps surface automatically (e.g., a lint script or test that checks every learning objective maps to ≥ 1 level).
 
 ## 5. Git Simulation Engine Design
@@ -164,12 +164,14 @@ Mastery model: a concept is "mastered" once all of its variation levels are comp
 
 ## 7. UI/UX Requirements
 
-Visual theme: dark terminal aesthetic as the default (monospace fonts, dark background, muted accent colors), with a light/dark toggle built in from the start. The commit-graph visualization stays a clean, minimal node-and-line diagram (not illustrated/playful). All indicators (branch color, success/failure state) must be distinguishable without relying on color alone (shape/icon/label backup), per the full-accessibility requirement.
+Visual theme: dark terminal aesthetic as the default (monospace fonts, dark background, muted accent colors), with a light/dark toggle built in from the start. The commit-graph visualization stays a clean, minimal node-and-line diagram (not illustrated/playful). All indicators (branch color, success/failure state) must be distinguishable without relying on color alone (text label, shape or line-pattern backup), per the full-accessibility requirement.
+
+No emojis anywhere in the UI or content: not in titles, buttons, labels or level text. Use plain text labels instead (an automated test enforces this). Keep subtitles and descriptions as minimal as possible: a title should usually stand alone, with at most one short line beneath it.
 
 Main screens:
 
 1. Level-select: a path/map layout, levels shown as nodes along a winding path, grouped visually by concept, with locked nodes greyed out. Overall section progress bar at the top; per-concept mastery indicators (Mastered / Mastered with assistance / In progress / Not started) shown alongside each concept's node cluster.
-2. Level/play screen: an objective banner; a toggleable cheatsheet panel (always reachable mid-level via a button/icon, not just shown once); the terminal input/output area; the commit-graph visualization; a working-directory/staging-area view; a file editor panel; a Reset Level button; a hint button (hidden-by-default on variations, always visible on main levels); and, on variations, no cheatsheet panel at all.
+2. Level/play screen: an objective banner; a toggleable cheatsheet panel (always reachable mid-level via a button, not just shown once); the terminal input/output area; the commit-graph visualization; a working-directory/staging-area view; a file editor panel; a Reset Level button; a hint button (hidden-by-default on variations, always visible on main levels); and, on variations, no cheatsheet panel at all.
 3. Free Play (sandbox) screen: an open repo with the full command set unlocked, no objective, no grading, just a place to experiment. Reachable from the main menu, separate from the level progression.
 
 Terminal behavior: feels like a real terminal, type a command, press Enter, it runs immediately and prints output. Up-arrow recalls previous commands in that level's session. Tab triggers autocomplete/suggestions limited to that level's allowed commands and relevant flags. A command outside the level's whitelist prints a realistic-looking git error plus one plain-language sentence explaining why it's unavailable here.

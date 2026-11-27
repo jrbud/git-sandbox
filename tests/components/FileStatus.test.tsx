@@ -63,7 +63,7 @@ describe('FileStatus', () => {
 
   it('lists plain files before git init', () => {
     render(<FileStatus repo={build(['echo a > a.txt']).repo} />)
-    expect(screen.getByText(/Not a git repository yet/)).toBeInTheDocument()
+    expect(screen.getByText(/Not a git repository/)).toBeInTheDocument()
     expect(screen.getByText('a.txt')).toBeInTheDocument()
   })
 })

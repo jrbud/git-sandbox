@@ -42,7 +42,7 @@ export function PlayScreen({ level, onComplete, onNextLevel, onBackToMap }: Play
         <div className="play-toolbar" role="toolbar" aria-label="Level tools">
           {onBackToMap && (
             <button type="button" className="toolbar-button" onClick={onBackToMap}>
-              <span aria-hidden="true">← </span>Back to map
+              Back to map
             </button>
           )}
           {level.kind === 'main' && <Cheatsheet entries={level.cheatsheet} />}
@@ -62,13 +62,13 @@ export function PlayScreen({ level, onComplete, onNextLevel, onBackToMap }: Play
       {completed && (
         <section className="level-complete" aria-labelledby="level-complete-title" role="status">
           <h2 id="level-complete-title" ref={completeRef} tabIndex={-1}>
-            <span aria-hidden="true">✔ </span>Level complete!
+            Level complete!
           </h2>
           {level.successMessage && <p>{level.successMessage}</p>}
           <div className="level-complete-actions">
             {onNextLevel && (
               <button type="button" className="primary" onClick={onNextLevel}>
-                Next level <span aria-hidden="true">→</span>
+                Next level
               </button>
             )}
             {onBackToMap && (

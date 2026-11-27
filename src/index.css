@@ -450,8 +450,8 @@ textarea {
   background: var(--color-surface-alt);
 }
 
-.file-editor-file[aria-current='true']::before {
-  content: '▸ ';
+.file-editor-file[aria-current='true'] {
+  font-weight: 700;
 }
 
 .file-editor-new label {
@@ -585,26 +585,14 @@ textarea {
 }
 
 .level-select-intro {
-  display: grid;
-  grid-template-columns: 1fr auto;
-  gap: 0.4rem 1rem;
-  align-items: start;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
 }
 
 .level-select-intro h1 {
   font-size: 1.5rem;
-}
-
-.level-select-intro p {
-  margin: 0;
-  color: var(--color-text-muted);
-  max-width: 70ch;
-  grid-column: 1;
-}
-
-.level-select-intro button {
-  grid-column: 2;
-  grid-row: 1 / span 2;
 }
 
 .map-section {
@@ -770,4 +758,14 @@ textarea {
 
 .map-node.is-locked {
   border-style: dashed;
+}
+
+.map-node-state {
+  font-weight: 400;
+  font-size: 0.85em;
+}
+
+.terminal-error-label {
+  font-weight: 700;
+  color: var(--color-danger);
 }

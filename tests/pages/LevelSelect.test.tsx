@@ -52,11 +52,11 @@ describe('LevelSelect', () => {
     progress = complete(['beta.var2'], true, progress)
     progress = complete(['gamma.main'], false, progress)
     renderMap(progress)
-    expect(within(cluster('alpha')).getByTestId('mastery')).toHaveTextContent('★ Mastered')
+    expect(within(cluster('alpha')).getByTestId('mastery')).toHaveTextContent(/^Mastered$/)
     expect(within(cluster('beta')).getByTestId('mastery')).toHaveTextContent(
-      '☆ Mastered (with assistance)',
+      'Mastered (with assistance)',
     )
-    expect(within(cluster('gamma')).getByTestId('mastery')).toHaveTextContent('◐ In progress')
+    expect(within(cluster('gamma')).getByTestId('mastery')).toHaveTextContent('In progress')
   })
 
   it('shows section progress from main levels only, and locks later sections', () => {

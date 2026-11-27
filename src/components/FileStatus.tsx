@@ -6,7 +6,7 @@ import type { Repo } from '../engine/types'
 const BADGES: Record<ChangeKind, { symbol: string; label: string }> = {
   added: { symbol: '+', label: 'new' },
   modified: { symbol: '~', label: 'modified' },
-  deleted: { symbol: '−', label: 'deleted' },
+  deleted: { symbol: '-', label: 'deleted' },
 }
 
 function Group({
@@ -53,7 +53,7 @@ export function FileStatus({ repo }: { repo: Repo }) {
     return (
       <section className="panel file-status" aria-label="Files">
         <h2 className="panel-title">Files</h2>
-        <p className="panel-empty">Not a git repository yet, so git isn't tracking anything.</p>
+        <p className="panel-empty">Not a git repository.</p>
         <Group
           title="Files in this folder"
           hint="This folder is empty."
@@ -67,7 +67,7 @@ export function FileStatus({ repo }: { repo: Repo }) {
   return (
     <section className="panel file-status" aria-label="Files">
       <h2 className="panel-title">Files</h2>
-      {clean && <p className="panel-empty">Working tree clean: everything is committed.</p>}
+      {clean && <p className="panel-empty">Working tree clean.</p>}
       <Group
         title="Staged for next commit"
         hint="Nothing staged. Use git add."

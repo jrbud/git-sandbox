@@ -90,8 +90,7 @@ export function Terminal({ log, history, onSubmit, complete }: TerminalProps) {
               <div className="terminal-error">
                 {entry.error.message && <pre className="terminal-text">{entry.error.message}</pre>}
                 <p className="terminal-explanation">
-                  <span aria-hidden="true">✖ </span>
-                  <span className="sr-only">Error: </span>
+                  <span className="terminal-error-label">Error: </span>
                   {entry.error.explanation}
                 </p>
               </div>

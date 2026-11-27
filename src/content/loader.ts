@@ -47,7 +47,7 @@ function parseSections(raw: unknown, problems: string[]): Section[] {
       problems.push(`${where} must be an object`)
       return
     }
-    requireStrings(value, ['id', 'title', 'description', 'icon'], where, problems)
+    requireStrings(value, ['id', 'title', 'description'], where, problems)
     if (!isStringArray(value.concepts) || value.concepts.length === 0) {
       problems.push(`${where}: "concepts" must be a non-empty array of concept ids`)
     }
@@ -69,7 +69,6 @@ function parseSections(raw: unknown, problems: string[]): Section[] {
       id: String(value.id),
       title: String(value.title),
       description: String(value.description),
-      icon: String(value.icon),
       conceptIds: isStringArray(value.concepts) ? value.concepts : [],
       unlock,
     })
