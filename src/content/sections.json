@@ -1,0 +1,12 @@
+{
+  "sections": [
+    {
+      "id": "core-basics",
+      "title": "Core Basics",
+      "description": "Snapshots, branches and remotes: everything you need to start using git.",
+      "icon": "🌱",
+      "concepts": ["commit"],
+      "unlock": { "type": "none" }
+    }
+  ]
+}

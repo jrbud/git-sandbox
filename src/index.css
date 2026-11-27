@@ -565,3 +565,209 @@ textarea {
   color: var(--color-accent);
   text-decoration: underline;
 }
+
+.app-main:focus {
+  outline: none;
+}
+
+.level-complete-actions {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+/* Level select map */
+
+.level-select {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.level-select-intro {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 0.4rem 1rem;
+  align-items: start;
+}
+
+.level-select-intro h1 {
+  font-size: 1.5rem;
+}
+
+.level-select-intro p {
+  margin: 0;
+  color: var(--color-text-muted);
+  max-width: 70ch;
+  grid-column: 1;
+}
+
+.level-select-intro button {
+  grid-column: 2;
+  grid-row: 1 / span 2;
+}
+
+.map-section {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  padding: 1.25rem;
+}
+
+.map-section.is-locked {
+  opacity: 0.7;
+}
+
+.map-section-header h2 {
+  font-size: 1.2rem;
+}
+
+.map-section-header p {
+  margin: 0.25rem 0 0.75rem;
+  color: var(--color-text-muted);
+}
+
+.map-locked-label {
+  color: var(--color-text-muted);
+  font-weight: 400;
+}
+
+.progress-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.progress-bar {
+  flex: 1;
+  height: 0.6rem;
+  background: var(--color-surface-alt);
+  border: 1px solid var(--color-border);
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: var(--color-success);
+}
+
+.progress-text {
+  color: var(--color-text-muted);
+  font-size: 0.9rem;
+  white-space: nowrap;
+}
+
+/* The winding path: concepts zig-zag, joined by a dashed trail. */
+.map-path {
+  list-style: none;
+  margin: 1.25rem 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.map-concept {
+  position: relative;
+  width: min(30rem, 100%);
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  background: var(--color-surface-alt);
+}
+
+.map-concept:nth-child(4n + 2) {
+  margin-left: 12%;
+}
+
+.map-concept:nth-child(4n + 3) {
+  margin-left: 24%;
+}
+
+.map-concept:nth-child(4n + 4) {
+  margin-left: 12%;
+}
+
+.map-concept + .map-concept {
+  margin-top: 2rem;
+}
+
+.map-concept + .map-concept::before {
+  content: '';
+  position: absolute;
+  top: calc(-2rem - 1px);
+  left: 2.25rem;
+  height: 2rem;
+  border-left: 3px dashed var(--color-border);
+}
+
+.map-concept.is-locked {
+  opacity: 0.6;
+}
+
+.map-concept-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.map-concept-title {
+  font-size: 1rem;
+}
+
+.map-concept-number {
+  color: var(--color-text-muted);
+}
+
+.mastery {
+  font-size: 0.85rem;
+  color: var(--color-text-muted);
+}
+
+.mastery-mastered {
+  color: var(--color-success);
+  font-weight: 700;
+}
+
+.mastery-mastered-with-assistance {
+  color: var(--color-success);
+}
+
+.mastery-in-progress {
+  color: var(--color-accent);
+}
+
+.map-nodes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.6rem;
+}
+
+.map-node {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  border-radius: 999px;
+  padding: 0.3rem 0.85rem;
+}
+
+.map-node-main {
+  font-weight: 700;
+  border-width: 2px;
+}
+
+.map-node.is-completed {
+  border-color: var(--color-success);
+  color: var(--color-success);
+}
+
+.map-node.is-open {
+  border-color: var(--color-accent);
+}
+
+.map-node.is-locked {
+  border-style: dashed;
+}

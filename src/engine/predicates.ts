@@ -42,6 +42,57 @@ export type Predicate =
   | { check: 'upstreamIs'; branch: string; remote: string; remoteBranch: string }
   | { check: 'lastCommitMessage'; onBranch?: string; equals?: string; contains?: string }
 
+type CheckName = Extract<Predicate, { check: string }>['check']
+
+/** Required string fields for each check, used to validate level files. */
+export const PREDICATE_CHECKS: Record<CheckName, readonly string[]> = {
+  isInitialized: [],
+  branchExists: ['name'],
+  headPointsTo: ['ref'],
+  headDetached: [],
+  commitCount: [],
+  fileInWorkingDirectory: ['path'],
+  fileStaged: ['path'],
+  fileTracked: ['path'],
+  fileUntracked: ['path'],
+  fileIgnored: ['path'],
+  fileCommitted: ['path'],
+  workingTreeClean: [],
+  branchContains: ['branch', 'ref'],
+  refsEqual: ['ref', 'other'],
+  isMergeCommit: ['ref'],
+  configEquals: ['key'],
+  remoteExists: ['name'],
+  remoteBranchMatches: ['remote', 'branch'],
+  upstreamIs: ['branch', 'remote', 'remoteBranch'],
+  lastCommitMessage: [],
+}
+
+/** Problems with a predicate written in a level file, as readable messages ([] when valid). */
+export function validatePredicate(value: unknown, path = 'successPredicate'): string[] {
+  if (typeof value !== 'object' || value === null || Array.isArray(value)) {
+    return [`${path} must be an object`]
+  }
+  const p = value as Record<string, unknown>
+  for (const combinator of ['all', 'any'] as const) {
+    if (combinator in p) {
+      if (!Array.isArray(p[combinator]) || (p[combinator] as unknown[]).length === 0) {
+        return [`${path}.${combinator} must be a non-empty array`]
+      }
+      return (p[combinator] as unknown[]).flatMap((child, i) =>
+        validatePredicate(child, `${path}.${combinator}[${i}]`),
+      )
+    }
+  }
+  if ('not' in p) return validatePredicate(p.not, `${path}.not`)
+  if (typeof p.check !== 'string' || !(p.check in PREDICATE_CHECKS)) {
+    return [`${path}.check must be one of: ${Object.keys(PREDICATE_CHECKS).join(', ')}`]
+  }
+  return PREDICATE_CHECKS[p.check as CheckName]
+    .filter((field) => typeof p[field] !== 'string')
+    .map((field) => `${path}.${field} must be a string for check "${p.check}"`)
+}
+
 function tipOf(world: World, branch: string | undefined) {
   return branch === undefined ? headCommitId(world.repo) : resolveRevision(world.repo, branch)
 }

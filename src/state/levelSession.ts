@@ -1,5 +1,5 @@
 import { useReducer } from 'react'
-import type { Level } from '../content/types'
+import type { Predicate } from '../engine/predicates'
 import { runCommand, type DispatchError } from '../engine/dispatcher'
 import { evaluatePredicate } from '../engine/predicates'
 import { cloneWorld } from '../engine/repo'
@@ -13,7 +13,7 @@ export interface LogEntry {
 }
 
 export interface SessionState {
-  level: Level
+  config: SessionConfig
   world: World
   log: LogEntry[]
   /** Every command typed this session, oldest first, for up-arrow recall. */
@@ -30,10 +30,18 @@ export type SessionAction =
   | { type: 'reset' }
   | { type: 'revealHint' }
 
-export function createSession(level: Level): SessionState {
+/** What a session needs. A Level satisfies this; Free Play omits the whitelist and goal. */
+export interface SessionConfig {
+  startingState: World
+  allowedCommands?: readonly string[]
+  successPredicate?: Predicate
+  hints?: readonly string[]
+}
+
+export function createSession(config: SessionConfig): SessionState {
   return {
-    level,
-    world: cloneWorld(level.startingState),
+    config,
+    world: cloneWorld(config.startingState),
     log: [],
     history: [],
     completed: false,
@@ -43,7 +51,9 @@ export function createSession(level: Level): SessionState {
 }
 
 function withWorld(state: SessionState, world: World): SessionState {
-  const completed = state.completed || evaluatePredicate(world, state.level.successPredicate)
+  const predicate = state.config.successPredicate
+  const completed =
+    state.completed || (predicate !== undefined && evaluatePredicate(world, predicate))
   return { ...state, world, completed }
 }
 
@@ -54,7 +64,7 @@ export function sessionReducer(state: SessionState, action: SessionAction): Sess
       const history = input.trim() === '' ? state.history : [...state.history, input]
       if (input.trim() === 'clear') return { ...state, history, log: [] }
       const result = runCommand(state.world, input, {
-        allowedCommands: state.level.allowedCommands,
+        allowedCommands: state.config.allowedCommands,
       })
       const entry: LogEntry = result.ok
         ? { id: state.nextId, input, output: result.output }
@@ -65,12 +75,15 @@ export function sessionReducer(state: SessionState, action: SessionAction): Sess
     case 'setWorld':
       return withWorld(state, action.world)
     case 'reset':
-      return { ...state, world: cloneWorld(state.level.startingState), log: [], completed: false }
+      return { ...state, world: cloneWorld(state.config.startingState), log: [], completed: false }
     case 'revealHint':
-      return { ...state, hintsShown: Math.min(state.hintsShown + 1, state.level.hints.length) }
+      return {
+        ...state,
+        hintsShown: Math.min(state.hintsShown + 1, state.config.hints?.length ?? 0),
+      }
   }
 }
 
-export function useLevelSession(level: Level) {
-  return useReducer(sessionReducer, level, createSession)
+export function useLevelSession(config: SessionConfig) {
+  return useReducer(sessionReducer, config, createSession)
 }
