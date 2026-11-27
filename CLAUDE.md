@@ -107,6 +107,8 @@ Repo {
 }
 ```
 
+**As implemented (Phase 1).** The staging area is real git's index: a full snapshot of the next commit, so "staged changes" are the index compared with HEAD's tree. Handlers operate on a `World` (`{ repo, servers, globalConfig, clock }`) rather than a bare `Repo`: `servers` maps a remote URL to its Repo-shaped `RemoteRepo`, `repo.remotes` holds `{ name, url }`, `repo.remoteBranches` holds remote-tracking refs such as `origin/main`, and `clock` is a simulated time source so commit ids and timestamps are deterministic. Before `git init` the repo has `initialized: false`.
+
 **Command handlers.** Each supported git command is a pure-ish function `(repo, args) => { newRepo, output, error? }` registered in a command registry keyed by command name (e.g. `commit`, `branch`, `merge`). This registry is the single place new commands get added (ties into Section 4's scalability requirement). Each handler should:
 
 - Validate args against that level's allowed flags.
@@ -258,7 +260,7 @@ Naming/branding, visual polish beyond the MVP palette, and any additional gamifi
 2. Implement an empty-repo factory and the `git init` handler. Test: `init` on an empty state produces a repo with no commits, `main` branch unset, empty working directory.
 3. Implement the simulated working directory and staging area as data structures (file path -> content maps). Test: direct manipulation helpers add/update/remove files correctly.
 4. Implement the `git add` handler. Test: staging a tracked/untracked file moves the right content into the staging area; staging a nonexistent file errors.
-5. Implement the `git commit` handler. Test: committing creates a commit with correct parent(s), advances the current branch pointer, clears the staging area; committing with nothing staged errors.
+5. Implement the `git commit` handler. Test: committing creates a commit with correct parent(s), advances the current branch pointer, and leaves no staged changes (the staging area is a full snapshot, as in real git, and now matches the new commit); committing with nothing staged errors.
 6. Implement the `git status` handler. Test: correctly reports staged/unstaged/untracked files for several hand-built states.
 7. Implement the `git log` handler. Test: walks parents from HEAD and returns commits in correct order for a linear history and for a history with a merge commit.
 8. Implement the `git diff` handler. Test: correctly diffs working directory vs. staging area, and staging area vs. last commit, for added/modified/deleted files.
