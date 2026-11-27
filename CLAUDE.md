@@ -237,6 +237,8 @@ Naming/branding, visual polish beyond the MVP palette, and any additional gamifi
 - Phases run bottom-up by layer: engine first (fully tested), then UI, then content, then polish.
 - Each numbered step below is a single, small, intentional unit of work with its own automated test(s). Do not bundle multiple steps' work into one commit.
 - Commit to git at phase boundaries only (once every step in a phase passes), not after every individual step.
+- Never add Claude as a co-author or credit Claude in commits or pull requests: no `Co-Authored-By: Claude` trailers in commit messages and no "Generated with Claude Code" lines in PR descriptions.
+- Work for each phase goes on its own branch with a pull request into `main`; the user reviews and merges.
 - Verification is automated tests only for this plan (Vitest + React Testing Library) -- no manual/visual checklists.
 - Before starting each step, briefly check it against this document. If a step's tests fail after a reasonable attempt, or this document turns out to be ambiguous, inconsistent, or wrong for that step, STOP, clearly flag exactly what's wrong or unclear, and wait rather than guessing and continuing.
 - Test tooling: Vitest for unit/engine tests, React Testing Library for component tests, both wired into the Phase 0 CI pipeline.
