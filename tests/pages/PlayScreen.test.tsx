@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { describe, expect, it, vi } from 'vitest'
-import { createSampleLevel } from '../../src/content/sampleLevel'
+import { createSampleLevel } from '../fixtures/sampleLevel'
 import { PlayScreen } from '../../src/pages/PlayScreen'
 
 function setup() {

@@ -1,8 +1,8 @@
-import { runCommands } from '../engine/dispatcher'
-import { writeWorkingFile } from '../engine/files'
-import { createWorld } from '../engine/repo'
-import type { World } from '../engine/types'
-import type { Level } from './types'
+import { runCommands } from '../../src/engine/dispatcher'
+import { writeWorkingFile } from '../../src/engine/files'
+import { createWorld } from '../../src/engine/repo'
+import type { World } from '../../src/engine/types'
+import type { Level } from '../../src/content/types'
 
 function startingWorld(): World {
   const base = writeWorkingFile(

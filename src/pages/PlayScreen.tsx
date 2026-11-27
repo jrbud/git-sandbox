@@ -1,30 +1,38 @@
 import { useEffect, useRef } from 'react'
 import { Cheatsheet } from '../components/Cheatsheet'
-import { CommitGraph } from '../components/CommitGraph'
-import { completeCommand } from '../components/completion'
-import { FileEditor } from '../components/FileEditor'
-import { FileStatus } from '../components/FileStatus'
 import { HintPanel } from '../components/HintPanel'
 import { ObjectiveBanner } from '../components/ObjectiveBanner'
 import { ResetButton } from '../components/ResetButton'
-import { Terminal } from '../components/Terminal'
+import { Workspace } from '../components/Workspace'
 import type { Level } from '../content/types'
-import { removeWorkingFile, writeWorkingFile } from '../engine/files'
 import { useLevelSession } from '../state/levelSession'
 
 export interface PlayScreenProps {
   level: Level
+  /** Called once each time the objective is met, with whether any hint was revealed. */
+  onComplete?(result: { hintUsed: boolean }): void
   /** Shown as a "Next level" button once the objective is met. */
   onNextLevel?(): void
+  /** Shown as a "Back to map" button. */
+  onBackToMap?(): void
 }
 
-export function PlayScreen({ level, onNextLevel }: PlayScreenProps) {
+export function PlayScreen({ level, onComplete, onNextLevel, onBackToMap }: PlayScreenProps) {
   const [state, dispatch] = useLevelSession(level)
   const completeRef = useRef<HTMLHeadingElement>(null)
-  const { world, completed } = state
+  const { completed } = state
+  const onCompleteRef = useRef(onComplete)
+  const hintUsedRef = useRef(false)
 
   useEffect(() => {
-    if (completed) completeRef.current?.focus()
+    onCompleteRef.current = onComplete
+    hintUsedRef.current = state.hintsShown > 0
+  })
+
+  useEffect(() => {
+    if (!completed) return
+    completeRef.current?.focus()
+    onCompleteRef.current?.({ hintUsed: hintUsedRef.current })
   }, [completed])
 
   return (
@@ -32,6 +40,11 @@ export function PlayScreen({ level, onNextLevel }: PlayScreenProps) {
       <header className="play-header">
         <ObjectiveBanner title={level.title} objective={level.objective} completed={completed} />
         <div className="play-toolbar" role="toolbar" aria-label="Level tools">
+          {onBackToMap && (
+            <button type="button" className="toolbar-button" onClick={onBackToMap}>
+              <span aria-hidden="true">← </span>Back to map
+            </button>
+          )}
           {level.kind === 'main' && <Cheatsheet entries={level.cheatsheet} />}
           <ResetButton onReset={() => dispatch({ type: 'reset' })} />
         </div>
@@ -52,39 +65,22 @@ export function PlayScreen({ level, onNextLevel }: PlayScreenProps) {
             <span aria-hidden="true">✔ </span>Level complete!
           </h2>
           {level.successMessage && <p>{level.successMessage}</p>}
-          {onNextLevel && (
-            <button type="button" className="primary" onClick={onNextLevel}>
-              Next level <span aria-hidden="true">→</span>
-            </button>
-          )}
+          <div className="level-complete-actions">
+            {onNextLevel && (
+              <button type="button" className="primary" onClick={onNextLevel}>
+                Next level <span aria-hidden="true">→</span>
+              </button>
+            )}
+            {onBackToMap && (
+              <button type="button" onClick={onBackToMap}>
+                Back to map
+              </button>
+            )}
+          </div>
         </section>
       )}
 
-      <div className="play-grid">
-        <div className="play-main">
-          <Terminal
-            log={state.log}
-            history={state.history}
-            onSubmit={(input) => dispatch({ type: 'run', input })}
-            complete={(input) =>
-              completeCommand(input, { world, allowedCommands: level.allowedCommands })
-            }
-          />
-          <FileEditor
-            files={world.repo.workingDirectory}
-            onSave={(path, content) =>
-              dispatch({ type: 'setWorld', world: writeWorkingFile(world, path, content) })
-            }
-            onDelete={(path) =>
-              dispatch({ type: 'setWorld', world: removeWorkingFile(world, path) })
-            }
-          />
-        </div>
-        <div className="play-side">
-          <CommitGraph repo={world.repo} />
-          <FileStatus repo={world.repo} />
-        </div>
-      </div>
+      <Workspace state={state} dispatch={dispatch} />
     </div>
   )
 }

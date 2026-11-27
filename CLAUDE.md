@@ -156,6 +156,12 @@ Manifest files (per Section 4's scalability requirement):
 
 Mastery model: a concept is "mastered" once all of its variation levels are completed. Each variation completion records whether any hint was shown; a concept mastered with zero hints across all its variations is flagged **Mastered**, otherwise **Mastered (with assistance)**. Completing only the main level never grants mastery -- it only unlocks the next concept in the main progression.
 
+**As implemented (Phase 3).**
+- `startingState` in a level file is a recipe, not a raw object graph: `{ globalConfig?, files?, servers?, setup? }`. `setup` is a list of commands run in order in the player's folder; an entry `{ "workspace": "teammate", "commands": [...] }` runs commands as someone else sharing the same remote servers, which is how levels simulate a teammate pushing. Because the engine is deterministic, a recipe always builds the same repository. `globalConfig` defaults to a ready-made player identity; give `{}` for levels that teach `git config`.
+- Each concept file is `{ conceptId, sectionId, title, levels: [main, ...variations] }`. `sections.json` lists each section's concepts in order. The loader rejects malformed content with every problem listed by file and field, including setup commands that fail and objectives already met by the starting state.
+- Unlocking: a concept's main level opens when the previous concept's main level is complete; its variations open once its own main level is complete; a section opens when the section named in its `unlock` rule has every main level complete.
+- Replaying a level keeps the best result: once a level is completed without hints, it stays recorded as hint-free.
+
 ## 7. UI/UX Requirements
 
 Visual theme: dark terminal aesthetic as the default (monospace fonts, dark background, muted accent colors), with a light/dark toggle built in from the start. The commit-graph visualization stays a clean, minimal node-and-line diagram (not illustrated/playful). All indicators (branch color, success/failure state) must be distinguishable without relying on color alone (shape/icon/label backup), per the full-accessibility requirement.

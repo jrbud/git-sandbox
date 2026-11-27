@@ -7,7 +7,7 @@ import { FileStatus } from '../../src/components/FileStatus'
 import { HintPanel } from '../../src/components/HintPanel'
 import { ObjectiveBanner } from '../../src/components/ObjectiveBanner'
 import { ResetButton } from '../../src/components/ResetButton'
-import { createSampleLevel } from '../../src/content/sampleLevel'
+import { createSampleLevel } from '../fixtures/sampleLevel'
 import { runCommand } from '../../src/engine/dispatcher'
 import { removeWorkingFile, writeWorkingFile } from '../../src/engine/files'
 import { createSession, sessionReducer, useLevelSession } from '../../src/state/levelSession'
@@ -154,7 +154,7 @@ describe('HintPanel', () => {
   })
 
   it('keeps the record of hint use across a level reset', () => {
-    let state = createSession({ ...createSampleLevel(), kind: 'variation' })
+    let state = createSession(createSampleLevel())
     state = sessionReducer(state, { type: 'revealHint' })
     state = sessionReducer(state, { type: 'reset' })
     expect(state.hintsShown).toBe(1)

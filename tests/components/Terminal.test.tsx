@@ -3,7 +3,7 @@ import userEvent from '@testing-library/user-event'
 import { describe, expect, it, vi } from 'vitest'
 import { completeCommand } from '../../src/components/completion'
 import { Terminal } from '../../src/components/Terminal'
-import { createSampleLevel } from '../../src/content/sampleLevel'
+import { createSampleLevel } from '../fixtures/sampleLevel'
 import { useLevelSession } from '../../src/state/levelSession'
 import type { Level } from '../../src/content/types'
 
