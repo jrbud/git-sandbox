@@ -13,7 +13,7 @@ export interface PlayScreenProps {
   onComplete?(result: { hintUsed: boolean }): void
   /** Shown as a "Next level" button once the objective is met. */
   onNextLevel?(): void
-  /** Shown as a "Back to map" button. */
+  /** Shown as a "Back to levels" button. */
   onBackToMap?(): void
 }
 
@@ -42,7 +42,7 @@ export function PlayScreen({ level, onComplete, onNextLevel, onBackToMap }: Play
         <div className="play-toolbar" role="toolbar" aria-label="Level tools">
           {onBackToMap && (
             <button type="button" className="toolbar-button" onClick={onBackToMap}>
-              Back to map
+              Back to levels
             </button>
           )}
           {level.kind === 'main' && <Cheatsheet entries={level.cheatsheet} />}
@@ -73,7 +73,7 @@ export function PlayScreen({ level, onComplete, onNextLevel, onBackToMap }: Play
             )}
             {onBackToMap && (
               <button type="button" onClick={onBackToMap}>
-                Back to map
+                Back to levels
               </button>
             )}
           </div>

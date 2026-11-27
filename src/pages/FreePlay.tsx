@@ -22,7 +22,7 @@ export function FreePlay({ onBackToMap }: { onBackToMap?(): void }) {
         <div className="play-toolbar" role="toolbar" aria-label="Free Play tools">
           {onBackToMap && (
             <button type="button" className="toolbar-button" onClick={onBackToMap}>
-              Back to map
+              Back to levels
             </button>
           )}
           <ResetButton onReset={() => dispatch({ type: 'reset' })} />

@@ -41,6 +41,7 @@ const commitFile = {
   conceptId: 'commit',
   sectionId: 'core-basics',
   title: 'Commits',
+  summary: 'Saving snapshots.',
   levels: [main, variation],
 }
 const files = (file: unknown = commitFile) => ({ './levels/core-basics/commit.json': file })
@@ -157,6 +158,14 @@ describe('loadContent', () => {
     const mismatched = { ...commitFile, conceptId: 'commits' }
     expect(problems(sections, files(mismatched))).toContain(
       'levels/core-basics/commit.json: "conceptId" must be "commit" to match the file name',
+    )
+  })
+
+  it('requires a summary for each concept', () => {
+    const { summary: _summary, ...noSummary } = commitFile
+    void _summary
+    expect(problems(sections, files(noSummary))).toContain(
+      'levels/core-basics/commit.json: "summary" must be a non-empty string',
     )
   })
 

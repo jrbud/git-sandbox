@@ -37,6 +37,8 @@ export interface Concept {
   id: string
   sectionId: string
   title: string
+  /** One or two sentences on what this git feature does, shown on the level-select screen. */
+  summary: string
   /** The main level followed by the variations, in play order. */
   levels: Level[]
 }

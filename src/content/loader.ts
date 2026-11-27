@@ -185,7 +185,7 @@ function parseConcept(file: string, raw: unknown, problems: string[]): Concept |
     problems.push(`${where}: "conceptId" must be "${conceptId}" to match the file name`)
   if (raw.sectionId !== sectionId)
     problems.push(`${where}: "sectionId" must be "${sectionId}" to match the folder`)
-  requireStrings(raw, ['title'], where, problems)
+  requireStrings(raw, ['title', 'summary'], where, problems)
   if (!Array.isArray(raw.levels) || raw.levels.length === 0) {
     problems.push(`${where}: "levels" must be a non-empty array`)
     return undefined
@@ -199,7 +199,13 @@ function parseConcept(file: string, raw: unknown, problems: string[]): Concept |
       `${where}: the first level must be the only "main" level; the rest are variations`,
     )
   }
-  return { id: conceptId, sectionId, title: String(raw.title), levels }
+  return {
+    id: conceptId,
+    sectionId,
+    title: String(raw.title),
+    summary: String(raw.summary),
+    levels,
+  }
 }
 
 /**

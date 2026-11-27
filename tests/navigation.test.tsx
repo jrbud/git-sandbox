@@ -26,8 +26,8 @@ describe('navigation', () => {
 
     // Start on the map, with only the first lesson open.
     await screen.findByRole('heading', { name: 'Choose a level' })
-    expect(within(cluster('beta')).getByRole('button', { name: /^Lesson:/ })).toBeDisabled()
-    await user.click(within(cluster('alpha')).getByRole('button', { name: /^Lesson:/ }))
+    expect(within(cluster('beta')).getByRole('button', { name: /^Start Lesson:/ })).toBeDisabled()
+    await user.click(within(cluster('alpha')).getByRole('button', { name: /^Start Lesson:/ }))
 
     // Play the main level and finish it.
     expect(screen.getByRole('heading', { level: 1, name: 'alpha main' })).toBeInTheDocument()
@@ -37,8 +37,8 @@ describe('navigation', () => {
     )
 
     // Back on the map: next concept and practice levels are open.
-    await user.click(screen.getAllByRole('button', { name: /Back to map/ })[0])
-    expect(within(cluster('beta')).getByRole('button', { name: /^Lesson:/ })).toBeEnabled()
+    await user.click(screen.getAllByRole('button', { name: /Back to levels/ })[0])
+    expect(within(cluster('beta')).getByRole('button', { name: /^Start Lesson:/ })).toBeEnabled()
     expect(within(cluster('alpha')).getByTestId('mastery')).toHaveTextContent('In progress')
     expect(screen.getByRole('progressbar', { name: 'Basics progress' })).toHaveAttribute(
       'aria-valuenow',
@@ -46,7 +46,7 @@ describe('navigation', () => {
     )
 
     // A practice level, then "Next level" goes straight to the other practice level.
-    await user.click(within(cluster('alpha')).getByRole('button', { name: /^Practice 1/ }))
+    await user.click(within(cluster('alpha')).getByRole('button', { name: /^Start Practice 1/ }))
     expect(screen.queryByRole('button', { name: /Cheatsheet/ })).not.toBeInTheDocument()
     await solve(user)
     await user.click(screen.getByRole('button', { name: /Next level/ }))
@@ -54,7 +54,7 @@ describe('navigation', () => {
     await solve(user)
 
     // Both practice levels done without hints: mastered.
-    await user.click(screen.getAllByRole('button', { name: /Back to map/ })[0])
+    await user.click(screen.getAllByRole('button', { name: /Back to levels/ })[0])
     expect(within(cluster('alpha')).getByTestId('mastery')).toHaveTextContent(/^Mastered$/)
     expect(await store.load()).toEqual({
       version: 1,
@@ -78,13 +78,13 @@ describe('navigation', () => {
     render(<App catalog={makeCatalog()} store={store} />)
     await user.click(
       await within(await screen.findByTestId('concept-alpha')).findByRole('button', {
-        name: /^Practice 2/,
+        name: /^Start Practice 2/,
       }),
     )
     await user.click(screen.getByRole('button', { name: 'Need help?' }))
     await user.click(screen.getByRole('button', { name: /Show a hint/ }))
     await solve(user)
-    await user.click(screen.getAllByRole('button', { name: /Back to map/ })[0])
+    await user.click(screen.getAllByRole('button', { name: /Back to levels/ })[0])
     expect(within(cluster('alpha')).getByTestId('mastery')).toHaveTextContent(
       'Mastered (with assistance)',
     )
@@ -96,7 +96,7 @@ describe('navigation', () => {
     await user.click(await screen.findByRole('button', { name: /Free Play/ }))
     expect(screen.getByRole('heading', { name: 'Free Play' })).toBeInTheDocument()
     expect(screen.getByRole('main')).toHaveFocus()
-    await user.click(screen.getByRole('button', { name: /Back to map/ }))
+    await user.click(screen.getByRole('button', { name: /Back to levels/ }))
     expect(screen.getByRole('heading', { name: 'Choose a level' })).toBeInTheDocument()
   })
 
@@ -105,15 +105,15 @@ describe('navigation', () => {
     const store = new MemoryProgressStore()
     const { unmount } = render(<App catalog={makeCatalog()} store={store} />)
     await user.click(
-      within(await screen.findByTestId('concept-alpha')).getByRole('button', { name: /^Lesson:/ }),
+      within(await screen.findByTestId('concept-alpha')).getByRole('button', {
+        name: /^Start Lesson:/,
+      }),
     )
     await solve(user)
     unmount()
 
     render(<App catalog={makeCatalog()} store={store} />)
-    const lesson = within(await screen.findByTestId('concept-alpha')).getByRole('button', {
-      name: /^Lesson:/,
-    })
-    expect(lesson).toHaveAccessibleName(/Completed\.$/)
+    const row = await screen.findByTestId('level-alpha.main')
+    expect(within(row).getByTestId('status')).toHaveTextContent('Completed')
   })
 })

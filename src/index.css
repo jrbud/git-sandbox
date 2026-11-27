@@ -576,7 +576,7 @@ textarea {
   flex-wrap: wrap;
 }
 
-/* Level select map */
+/* Level select: sections listed in order, one line per task */
 
 .level-select {
   display: flex;
@@ -595,29 +595,173 @@ textarea {
   font-size: 1.5rem;
 }
 
-.map-section {
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius);
-  padding: 1.25rem;
+.task-section {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
 }
 
-.map-section.is-locked {
-  opacity: 0.7;
+.task-section.is-locked .concept-list {
+  opacity: 0.75;
 }
 
-.map-section-header h2 {
+.task-section-header h2 {
   font-size: 1.2rem;
 }
 
-.map-section-header p {
+.task-section-header p {
   margin: 0.25rem 0 0.75rem;
   color: var(--color-text-muted);
 }
 
-.map-locked-label {
+.task-section-locked {
   color: var(--color-text-muted);
   font-weight: 400;
+}
+
+.concept-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+/* Open concept: explanation on the left, tasks on the right. */
+.concept-body {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 1.5rem;
+  padding: 0.75rem 0.5rem 0.25rem;
+}
+
+@media (max-width: 800px) {
+  .concept-body {
+    grid-template-columns: 1fr;
+  }
+}
+
+.concept-summary {
+  margin: 0 0 0.75rem;
+}
+
+.concept-info-title {
+  margin: 0 0 0.35rem;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--color-text-muted);
+}
+
+.concept-commands {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.concept-command dt {
+  font-size: 0.9rem;
+}
+
+.concept-command dd {
+  margin: 0 0 0 1rem;
+  color: var(--color-text-muted);
+  font-size: 0.9rem;
+}
+
+.concept-tasks .task-row:first-child td {
+  padding-top: 0;
+}
+
+.concept-box {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  padding: 0.9rem 1rem 0.5rem;
+}
+
+.concept-heading {
+  display: flex;
+  align-items: baseline;
+  gap: 0.75rem;
+  padding: 0.1rem 0.5rem 0.5rem;
+  cursor: pointer;
+  list-style: none;
+  font-weight: 700;
+}
+
+.concept-heading::-webkit-details-marker {
+  display: none;
+}
+
+/* A plain-text open/closed indicator: + when closed, - when open. */
+.concept-heading::before {
+  content: '+';
+  width: 1ch;
+  color: var(--color-text-muted);
+}
+
+.concept-box[open] > .concept-heading::before {
+  content: '-';
+}
+
+.concept-box[open] > .concept-heading {
+  border-bottom: 1px solid var(--color-border);
+}
+
+.concept-box:not([open]) {
+  padding-bottom: 0.5rem;
+}
+
+.concept-percent {
+  margin-left: auto;
+  font-variant-numeric: tabular-nums;
+}
+
+.task-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.task-table tr:last-child td {
+  border-bottom: none;
+}
+
+.concept-name {
+  font-size: 1rem;
+}
+
+.concept-mastery {
+  font-weight: 400;
+  font-size: 0.85rem;
+  color: var(--color-text-muted);
+}
+
+.task-row td {
+  padding: 0.45rem 0.5rem;
+  border-bottom: 1px solid var(--color-surface-alt);
+}
+
+.task-name {
+  width: 100%;
+}
+
+.task-status {
+  white-space: nowrap;
+  padding-right: 1.25rem !important;
+  color: var(--color-text-muted);
+}
+
+.task-row.is-completed .task-status {
+  color: var(--color-success);
+  font-weight: 700;
+}
+
+.task-row.is-locked .task-name {
+  color: var(--color-text-muted);
+}
+
+.task-action button {
+  min-width: 5rem;
 }
 
 .progress-row {
@@ -644,125 +788,6 @@ textarea {
   color: var(--color-text-muted);
   font-size: 0.9rem;
   white-space: nowrap;
-}
-
-/* The winding path: concepts zig-zag, joined by a dashed trail. */
-.map-path {
-  list-style: none;
-  margin: 1.25rem 0 0;
-  padding: 0;
-  display: flex;
-  flex-direction: column;
-}
-
-.map-concept {
-  position: relative;
-  width: min(30rem, 100%);
-  padding: 0.75rem 1rem;
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius);
-  background: var(--color-surface-alt);
-}
-
-.map-concept:nth-child(4n + 2) {
-  margin-left: 12%;
-}
-
-.map-concept:nth-child(4n + 3) {
-  margin-left: 24%;
-}
-
-.map-concept:nth-child(4n + 4) {
-  margin-left: 12%;
-}
-
-.map-concept + .map-concept {
-  margin-top: 2rem;
-}
-
-.map-concept + .map-concept::before {
-  content: '';
-  position: absolute;
-  top: calc(-2rem - 1px);
-  left: 2.25rem;
-  height: 2rem;
-  border-left: 3px dashed var(--color-border);
-}
-
-.map-concept.is-locked {
-  opacity: 0.6;
-}
-
-.map-concept-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: baseline;
-  gap: 1rem;
-  flex-wrap: wrap;
-}
-
-.map-concept-title {
-  font-size: 1rem;
-}
-
-.map-concept-number {
-  color: var(--color-text-muted);
-}
-
-.mastery {
-  font-size: 0.85rem;
-  color: var(--color-text-muted);
-}
-
-.mastery-mastered {
-  color: var(--color-success);
-  font-weight: 700;
-}
-
-.mastery-mastered-with-assistance {
-  color: var(--color-success);
-}
-
-.mastery-in-progress {
-  color: var(--color-accent);
-}
-
-.map-nodes {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-  margin-top: 0.6rem;
-}
-
-.map-node {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.4rem;
-  border-radius: 999px;
-  padding: 0.3rem 0.85rem;
-}
-
-.map-node-main {
-  font-weight: 700;
-  border-width: 2px;
-}
-
-.map-node.is-completed {
-  border-color: var(--color-success);
-  color: var(--color-success);
-}
-
-.map-node.is-open {
-  border-color: var(--color-accent);
-}
-
-.map-node.is-locked {
-  border-style: dashed;
-}
-
-.map-node-state {
-  font-weight: 400;
-  font-size: 0.85em;
 }
 
 .terminal-error-label {

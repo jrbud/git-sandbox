@@ -34,14 +34,14 @@ describe('no emojis', () => {
     await screen.findByRole('heading', { name: 'Choose a level' })
     expect(document.body.textContent).not.toMatch(EMOJI)
 
-    await user.click(screen.getByRole('button', { name: /^Lesson: alpha main/ }))
+    await user.click(screen.getByRole('button', { name: /^Start Lesson: alpha main/ }))
     await user.click(screen.getByRole('button', { name: /Cheatsheet/ }))
     await user.click(screen.getByRole('button', { name: /Show a hint/ }))
     const input = screen.getByRole('textbox', { name: 'Command' })
     for (const line of ['git nope', ...SOLUTION]) await user.type(input, `${line}{Enter}`)
     expect(document.body.textContent).not.toMatch(EMOJI)
 
-    await user.click(screen.getAllByRole('button', { name: /Back to map/ })[0])
+    await user.click(screen.getAllByRole('button', { name: /Back to levels/ })[0])
     await user.click(screen.getByRole('button', { name: /Free Play/ }))
     expect(document.body.textContent).not.toMatch(EMOJI)
   })

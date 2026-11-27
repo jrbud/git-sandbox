@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import {
   mainLevel,
   variations,
@@ -6,6 +7,7 @@ import {
   type Level,
 } from '../content/types'
 import { isLevelComplete, type Progress } from '../state/progress'
+import { progressColor } from '../theme/progressColor'
 import {
   conceptMastery,
   isLevelUnlocked,
@@ -21,7 +23,14 @@ export interface LevelSelectProps {
   onFreePlay(): void
 }
 
-function LevelNode({
+type TaskStatus = 'Completed' | 'Not started' | 'Locked'
+
+function taskStatus(level: Level, catalog: ContentCatalog, progress: Progress): TaskStatus {
+  if (isLevelComplete(progress, level.id)) return 'Completed'
+  return isLevelUnlocked(level, catalog, progress) ? 'Not started' : 'Locked'
+}
+
+function TaskRow({
   level,
   label,
   catalog,
@@ -34,27 +43,37 @@ function LevelNode({
   progress: Progress
   onSelect(id: string): void
 }) {
-  const unlocked = isLevelUnlocked(level, catalog, progress)
-  const done = isLevelComplete(progress, level.id)
-  const state = done ? 'Completed' : unlocked ? 'Open' : 'Locked'
+  const status = taskStatus(level, catalog, progress)
+  const name = `${label}: ${level.title}`
   return (
-    <button
-      type="button"
-      className={`map-node map-node-${level.kind} is-${state.toLowerCase()}`}
-      disabled={!unlocked}
-      onClick={() => onSelect(level.id)}
-      aria-label={`${label}: ${level.title}. ${state}.`}
-      title={`${level.title} (${state})`}
+    <tr
+      className={`task-row is-${status.toLowerCase().replace(' ', '-')}`}
+      data-testid={`level-${level.id}`}
     >
-      <span aria-hidden="true">
-        {label}
-        {state !== 'Open' && <span className="map-node-state"> {state.toLowerCase()}</span>}
-      </span>
-    </button>
+      <td className="task-name">{name}</td>
+      <td className="task-status" data-testid="status">
+        {status}
+      </td>
+      <td className="task-action">
+        <button
+          type="button"
+          disabled={status === 'Locked'}
+          onClick={() => onSelect(level.id)}
+          aria-label={`Start ${name}`}
+        >
+          Start
+        </button>
+      </td>
+    </tr>
   )
 }
 
-function ConceptCluster({
+/**
+ * One collapsible box per concept. The header shows its name, mastery and completion percentage.
+ * Opened, the left half explains the concept and the commands it needs; the right half lists its
+ * tasks. Concepts in progress start open; finished and locked ones start closed.
+ */
+function ConceptBox({
   concept,
   index,
   catalog,
@@ -67,46 +86,89 @@ function ConceptCluster({
   progress: Progress
   onSelect(id: string): void
 }) {
-  const mastery = conceptMastery(concept, progress)
-  const main = mainLevel(concept)
-  const locked = !isLevelUnlocked(main, catalog, progress)
+  const locked = !isLevelUnlocked(mainLevel(concept), catalog, progress)
+  const mastery = locked ? 'Locked' : MASTERY_LABELS[conceptMastery(concept, progress)]
+  const done = concept.levels.filter((level) => isLevelComplete(progress, level.id)).length
+  const percent = Math.round((done / concept.levels.length) * 100)
+  const [open, setOpen] = useState(!locked && percent < 100)
+  const commands = mainLevel(concept).cheatsheet
   return (
-    <li
-      className={`map-concept${locked ? ' is-locked' : ''}`}
+    <details
+      className={`concept-box${locked ? ' is-locked' : ''}`}
       data-testid={`concept-${concept.id}`}
+      open={open}
+      onToggle={(event) => setOpen(event.currentTarget.open)}
     >
-      <div className="map-concept-header">
-        <h3 className="map-concept-title">
-          <span className="map-concept-number">{index + 1}.</span> {concept.title}
-        </h3>
-        <span className={`mastery mastery-${mastery}`} data-testid="mastery">
-          {locked ? 'Locked' : MASTERY_LABELS[mastery]}
+      <summary className="concept-heading">
+        <span className="concept-name">
+          {index + 1}. {concept.title}
         </span>
+        <span className="concept-mastery" data-testid="mastery">
+          {mastery}
+        </span>
+        <span
+          className="concept-percent"
+          data-testid="percent"
+          style={{ color: progressColor(percent) }}
+        >
+          {percent}%<span className="sr-only"> complete</span>
+        </span>
+      </summary>
+      <div className="concept-body">
+        <div className="concept-info">
+          <p className="concept-summary">{concept.summary}</p>
+          {commands.length > 0 && (
+            <>
+              <p className="concept-info-title">Commands</p>
+              <dl className="concept-commands">
+                {commands.map((entry) => (
+                  <div key={entry.command} className="concept-command">
+                    <dt>
+                      <code>{entry.command}</code>
+                    </dt>
+                    <dd>{entry.description}</dd>
+                  </div>
+                ))}
+              </dl>
+            </>
+          )}
+        </div>
+        <div className="concept-tasks">
+          <table className="task-table">
+            <thead className="sr-only">
+              <tr>
+                <th scope="col">Task</th>
+                <th scope="col">Status</th>
+                <th scope="col">Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              <TaskRow
+                level={mainLevel(concept)}
+                label="Lesson"
+                catalog={catalog}
+                progress={progress}
+                onSelect={onSelect}
+              />
+              {variations(concept).map((level, i) => (
+                <TaskRow
+                  key={level.id}
+                  level={level}
+                  label={`Practice ${i + 1}`}
+                  catalog={catalog}
+                  progress={progress}
+                  onSelect={onSelect}
+                />
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
-      <div className="map-nodes">
-        <LevelNode
-          level={main}
-          label="Lesson"
-          catalog={catalog}
-          progress={progress}
-          onSelect={onSelect}
-        />
-        {variations(concept).map((level, i) => (
-          <LevelNode
-            key={level.id}
-            level={level}
-            label={`Practice ${i + 1}`}
-            catalog={catalog}
-            progress={progress}
-            onSelect={onSelect}
-          />
-        ))}
-      </div>
-    </li>
+    </details>
   )
 }
 
-/** The level map: sections, a winding path of concepts, locks and mastery. */
+/** Every section in order, with one line per task: its name, its status and a Start button. */
 export function LevelSelect({ catalog, progress, onSelectLevel, onFreePlay }: LevelSelectProps) {
   return (
     <div className="level-select">
@@ -123,13 +185,13 @@ export function LevelSelect({ catalog, progress, onSelectLevel, onFreePlay }: Le
         return (
           <section
             key={section.id}
-            className={`map-section${unlocked ? '' : ' is-locked'}`}
+            className={`task-section${unlocked ? '' : ' is-locked'}`}
             aria-labelledby={headingId}
           >
-            <header className="map-section-header">
+            <header className="task-section-header">
               <h2 id={headingId}>
                 {section.title}
-                {!unlocked && <span className="map-locked-label"> (locked)</span>}
+                {!unlocked && <span className="task-section-locked"> (locked)</span>}
               </h2>
               <p>{section.description}</p>
               <div className="progress-row">
@@ -152,9 +214,9 @@ export function LevelSelect({ catalog, progress, onSelectLevel, onFreePlay }: Le
                 </span>
               </div>
             </header>
-            <ol className="map-path">
+            <div className="concept-list">
               {section.conceptIds.map((id, index) => (
-                <ConceptCluster
+                <ConceptBox
                   key={id}
                   concept={catalog.concepts.get(id)!}
                   index={index}
@@ -163,7 +225,7 @@ export function LevelSelect({ catalog, progress, onSelectLevel, onFreePlay }: Le
                   onSelect={onSelectLevel}
                 />
               ))}
-            </ol>
+            </div>
           </section>
         )
       })}

@@ -2,6 +2,7 @@
   "conceptId": "commit",
   "sectionId": "core-basics",
   "title": "Commits",
+  "summary": "A commit saves a snapshot of your staged files, with a message, so you can see and return to every version of your project.",
   "levels": [
     {
       "id": "core.commit.main",

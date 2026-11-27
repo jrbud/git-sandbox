@@ -158,7 +158,7 @@ Mastery model: a concept is "mastered" once all of its variation levels are comp
 
 **As implemented (Phase 3).**
 - `startingState` in a level file is a recipe, not a raw object graph: `{ globalConfig?, files?, servers?, setup? }`. `setup` is a list of commands run in order in the player's folder; an entry `{ "workspace": "teammate", "commands": [...] }` runs commands as someone else sharing the same remote servers, which is how levels simulate a teammate pushing. Because the engine is deterministic, a recipe always builds the same repository. `globalConfig` defaults to a ready-made player identity; give `{}` for levels that teach `git config`.
-- Each concept file is `{ conceptId, sectionId, title, levels: [main, ...variations] }`. `sections.json` lists each section's concepts in order. The loader rejects malformed content with every problem listed by file and field, including setup commands that fail and objectives already met by the starting state.
+- Each concept file is `{ conceptId, sectionId, title, summary, levels: [main, ...variations] }`, where `summary` is one or two sentences on what the git feature does. `sections.json` lists each section's concepts in order. The loader rejects malformed content with every problem listed by file and field, including setup commands that fail and objectives already met by the starting state.
 - Unlocking: a concept's main level opens when the previous concept's main level is complete; its variations open once its own main level is complete; a section opens when the section named in its `unlock` rule has every main level complete.
 - Replaying a level keeps the best result: once a level is completed without hints, it stays recorded as hint-free.
 
@@ -170,7 +170,7 @@ No emojis anywhere in the UI or content: not in titles, buttons, labels or level
 
 Main screens:
 
-1. Level-select: a path/map layout, levels shown as nodes along a winding path, grouped visually by concept, with locked nodes greyed out. Overall section progress bar at the top; per-concept mastery indicators (Mastered / Mastered with assistance / In progress / Not started) shown alongside each concept's node cluster.
+1. Level-select: a plain, readable list, not a map or graph. Sections appear in order; each section shows its progress bar, then one line per task (lesson or practice level) with the task name, its status (Completed / Not started / Locked) and a Start button. Each concept is its own collapsible box in a single column. Its header shows the concept name, its mastery (Mastered / Mastered with assistance / In progress / Not started) and its completion percentage, coloured from the normal text colour at 0% through yellow to green at 100%. Opened, the left half shows the concept's summary and the commands it needs (from the lesson's cheatsheet), and the right half lists its tasks. Concepts in progress start open; finished and locked ones start closed.
 2. Level/play screen: an objective banner; a toggleable cheatsheet panel (always reachable mid-level via a button, not just shown once); the terminal input/output area; the commit-graph visualization; a working-directory/staging-area view; a file editor panel; a Reset Level button; a hint button (hidden-by-default on variations, always visible on main levels); and, on variations, no cheatsheet panel at all.
 3. Free Play (sandbox) screen: an open repo with the full command set unlocked, no objective, no grading, just a place to experiment. Reachable from the main menu, separate from the level progression.
 
@@ -217,7 +217,7 @@ Included in MVP:
 - The simulated git engine covering: init, add, commit, status, log, diff, branch, checkout/switch, merge (fast-forward + 3-way, no conflicts yet -- conflicts are Collaboration-section scope), clone, remote, push, pull, fetch, .gitignore, and git config (user.name/user.email).
 - One main level per concept, each with a cheatsheet, briefing, and always-visible hints.
 - A default of 3 variation levels per concept (proposed default, per Section 6's mastery model), hints hidden-by-default on variations.
-- Level-select path/map screen with overall progress bar + per-concept mastery indicators.
+- Level-select list (one line per task with status and a Start button), with section progress bars and per-concept mastery indicators.
 - Free Play (sandbox) mode.
 - Dark/light theme toggle, full accessibility pass (screen reader support, colorblind-safe indicators, keyboard navigation).
 - localStorage-based save/progress, written behind a swappable interface.
@@ -307,7 +307,7 @@ Naming/branding, visual polish beyond the MVP palette, and any additional gamifi
 1. Implement the save/progress state layer behind a swappable interface, backed by localStorage. Test: progress written is correctly read back after a simulated reload; the interface can be swapped for an in-memory fake in tests.
 2. Implement mastery tracking per concept (variation completion + hint-used flag -> Mastered vs. Mastered with assistance). Test: completing all variations for a concept with no hints yields "Mastered"; completing with any hint used yields "Mastered (with assistance)".
 3. Implement loading of `sections.json` and the per-concept level manifest files (Section 6). Test: a sample manifest loads into the expected in-memory structure; a malformed manifest fails loudly with a clear error.
-4. Build the Level-select path/map screen, rendering nodes from the manifest plus current progress state (locked/unlocked, mastery indicators, overall progress bar reflecting main levels only). Test: locked concepts render as locked until their prerequisite is complete; mastery indicators match stored mastery state.
+4. Build the Level-select screen (a plain list, see Section 7), rendering tasks from the manifest plus current progress state (locked/unlocked, mastery indicators, overall progress bar reflecting main levels only). Test: locked concepts render as locked until their prerequisite is complete; mastery indicators match stored mastery state.
 5. Build the Free Play (sandbox) screen: full command set unlocked, no objective, no grading. Test: all engine commands are available regardless of any level's whitelist, and no predicate/grading logic runs.
 6. Wire the full navigation flow: level-select -> play screen -> completion -> back to level-select, including Free Play's separate entry point. Test: an end-to-end test walks this full loop for at least one concept's main level plus one variation.
 

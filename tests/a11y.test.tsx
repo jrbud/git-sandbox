@@ -16,7 +16,7 @@ import { makeCatalog } from './fixtures/catalog'
 async function openFirstLesson() {
   const user = userEvent.setup()
   const view = render(<App catalog={makeCatalog()} store={new MemoryProgressStore()} />)
-  await user.click(await screen.findByRole('button', { name: /^Lesson: alpha main/ }))
+  await user.click(await screen.findByRole('button', { name: /^Start Lesson: alpha main/ }))
   return { user, ...view }
 }
 
@@ -41,7 +41,7 @@ describe('accessibility', () => {
   it('the play screen and Free Play have no critical or serious axe violations', async () => {
     const { user, container } = await openFirstLesson()
     expect(await seriousViolations(container)).toEqual([])
-    await user.click(screen.getAllByRole('button', { name: /Back to map/ })[0])
+    await user.click(screen.getAllByRole('button', { name: /Back to levels/ })[0])
     await user.click(screen.getByRole('button', { name: /Free Play/ }))
     expect(await seriousViolations(container)).toEqual([])
   })
@@ -104,8 +104,8 @@ describe('keyboard navigation', () => {
     const position = (pattern: RegExp) => order.findIndex((label) => pattern.test(label))
     expect(position(/Skip to content/)).toBe(0)
     expect(position(/Switch to light theme/)).toBeGreaterThan(position(/Skip to content/))
-    expect(position(/Back to map/)).toBeGreaterThan(position(/Switch to light theme/))
-    expect(position(/Cheatsheet/)).toBeGreaterThan(position(/Back to map/))
+    expect(position(/Back to levels/)).toBeGreaterThan(position(/Switch to light theme/))
+    expect(position(/Cheatsheet/)).toBeGreaterThan(position(/Back to levels/))
     expect(position(/Reset level/)).toBeGreaterThan(position(/Cheatsheet/))
     expect(position(/Show a hint/)).toBeGreaterThan(position(/Reset level/))
     // The terminal input is reachable, and Tab on an empty line moves on to the file editor.

@@ -19,6 +19,7 @@ function concept(id: string, sectionId: string, variationCount = 2): Concept {
     id,
     sectionId,
     title: id[0].toUpperCase() + id.slice(1),
+    summary: `What ${id} does.`,
     levels: [
       level(id, sectionId, 'main'),
       ...Array.from({ length: variationCount }, (_, i) => level(id, sectionId, 'variation', i + 1)),
