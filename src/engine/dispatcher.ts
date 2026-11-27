@@ -1,8 +1,9 @@
 import { parseArgs } from './args'
 import { executeCommand } from './command'
 import { GitError, type GitErrorKind } from './errors'
-import { parseCommand, type ParsedCommand } from './parser'
+import { parseLine, toGitCommand, type ParsedCommand } from './parser'
 import { commandRegistry, UNSIMULATED_GIT_COMMANDS } from './registry'
+import { executeShellCommand, shellRegistry } from './shell'
 import type { World } from './types'
 import { enforceWhitelist } from './whitelist'
 
@@ -67,7 +68,14 @@ export function runCommand(
 ): DispatchResult {
   if (input.trim() === '') return { ok: true, world, output: '' }
   try {
-    const parsed = parseCommand(input)
+    const line = parseLine(input)
+    const shell = shellRegistry.get(line.program)
+    if (shell) {
+      // File commands are always available: they are how players create changes for git.
+      const result = executeShellCommand(world, shell, line.args, line.redirect)
+      return { ok: true, world: result.world, output: result.output }
+    }
+    const parsed = toGitCommand(line)
     const definition = commandRegistry.get(parsed.verb)
     if (!definition) throw unknownCommandError(parsed.verb)
     if (options.allowedCommands) {
