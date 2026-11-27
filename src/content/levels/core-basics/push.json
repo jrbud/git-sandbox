@@ -1,0 +1,176 @@
+{
+  "conceptId": "push",
+  "sectionId": "core-basics",
+  "title": "Push",
+  "summary": "git push uploads your local commits to a branch on a remote, so others can get them.",
+  "levels": [
+    {
+      "id": "core.push.main",
+      "kind": "main",
+      "title": "Share your work",
+      "briefing": "Commits you make stay on your computer until you push them. git push sends your branch's new commits to the remote branch it tracks. The first time you push a new branch, use -u to set up that tracking.",
+      "objective": "You made a commit after cloning. Push it to origin.",
+      "cheatsheet": [
+        {
+          "command": "git push",
+          "description": "Push to the tracked remote branch",
+          "example": "git push"
+        },
+        {
+          "command": "git push -u <remote> <branch>",
+          "description": "Push a new branch and track it",
+          "example": "git push -u origin feature"
+        },
+        {
+          "command": "git status",
+          "description": "Shows if you are ahead of the remote",
+          "example": "git status"
+        }
+      ],
+      "allowedCommands": [
+        "git push",
+        "git status",
+        "git log",
+        "git add",
+        "git commit",
+        "git branch",
+        "git switch",
+        "git remote"
+      ],
+      "startingState": {
+        "servers": ["https://example.com/team/project.git"],
+        "setup": [
+          {
+            "workspace": "teammate",
+            "commands": [
+              "git init",
+              "echo \"# Project\" > README.md",
+              "git add .",
+              "git commit -m \"Start project\"",
+              "git remote add origin https://example.com/team/project.git",
+              "git push -u origin main"
+            ]
+          },
+          "git clone https://example.com/team/project.git",
+          "echo \"fix\" > fix.txt",
+          "git add .",
+          "git commit -m \"Add fix\""
+        ]
+      },
+      "successPredicate": { "check": "remoteBranchMatches", "remote": "origin", "branch": "main" },
+      "hints": [
+        "git status says your branch is ahead of origin/main by 1 commit.",
+        "main already tracks origin/main, so no extra arguments are needed.",
+        "Run: git push"
+      ],
+      "solution": ["git push"],
+      "successMessage": "origin's main now has your commit, so your teammates can get it."
+    },
+    {
+      "id": "core.push.var1",
+      "kind": "variation",
+      "title": "A new branch",
+      "objective": "Push your feature branch to origin and set it to track origin/feature.",
+      "allowedCommands": ["git push", "git status", "git log", "git branch"],
+      "startingState": {
+        "servers": ["https://example.com/team/project.git"],
+        "setup": [
+          {
+            "workspace": "teammate",
+            "commands": [
+              "git init",
+              "echo \"# Project\" > README.md",
+              "git add .",
+              "git commit -m \"Start project\"",
+              "git remote add origin https://example.com/team/project.git",
+              "git push -u origin main"
+            ]
+          },
+          "git clone https://example.com/team/project.git",
+          "git switch -c feature",
+          "echo \"search\" > search.js",
+          "git add .",
+          "git commit -m \"Add search\""
+        ]
+      },
+      "successPredicate": {
+        "all": [
+          { "check": "remoteBranchMatches", "remote": "origin", "branch": "feature" },
+          {
+            "check": "upstreamIs",
+            "branch": "feature",
+            "remote": "origin",
+            "remoteBranch": "feature"
+          }
+        ]
+      },
+      "hints": [
+        "Plain git push fails: feature has no upstream yet.",
+        "-u pushes and sets up tracking in one go.",
+        "Run: git push -u origin feature"
+      ],
+      "solution": ["git push -u origin feature"],
+      "successMessage": "From now on, plain git push on feature knows where to go."
+    },
+    {
+      "id": "core.push.var2",
+      "kind": "variation",
+      "title": "First push",
+      "objective": "This repository has no remote. Add https://example.com/team/notes.git as origin and push main to it.",
+      "allowedCommands": ["git push", "git remote", "git status", "git log"],
+      "startingState": {
+        "servers": ["https://example.com/team/notes.git"],
+        "files": { "notes.txt": "first note\n" },
+        "setup": ["git init", "git add .", "git commit -m \"First note\""]
+      },
+      "successPredicate": { "check": "remoteBranchMatches", "remote": "origin", "branch": "main" },
+      "hints": [
+        "Add the remote first.",
+        "Then push main with -u so it tracks origin/main.",
+        "Run: git remote add origin https://example.com/team/notes.git, then git push -u origin main"
+      ],
+      "solution": [
+        "git remote add origin https://example.com/team/notes.git",
+        "git push -u origin main"
+      ],
+      "successMessage": "This is exactly how a project you started locally gets onto GitHub."
+    },
+    {
+      "id": "core.push.var3",
+      "kind": "variation",
+      "title": "Commit and push",
+      "objective": "Commit a new file called done.txt and push it to origin.",
+      "allowedCommands": ["git push", "git status", "git log", "git add", "git commit"],
+      "startingState": {
+        "servers": ["https://example.com/team/project.git"],
+        "setup": [
+          {
+            "workspace": "teammate",
+            "commands": [
+              "git init",
+              "echo \"# Project\" > README.md",
+              "git add .",
+              "git commit -m \"Start project\"",
+              "git remote add origin https://example.com/team/project.git",
+              "git push -u origin main"
+            ]
+          },
+          "git clone https://example.com/team/project.git"
+        ]
+      },
+      "successPredicate": {
+        "all": [
+          { "check": "fileCommitted", "path": "done.txt" },
+          { "check": "remoteBranchMatches", "remote": "origin", "branch": "main" }
+        ]
+      },
+      "hints": [
+        "Make the commit first; push only sends commits.",
+        "Create, stage and commit done.txt, then push.",
+        "Run: touch done.txt, git add done.txt, git commit -m \"Done\", git push"
+      ],
+      "solution": ["touch done.txt", "git add done.txt", "git commit -m \"Done\"", "git push"],
+      "successMessage": "Commit locally, then push to share: the everyday git loop."
+    }
+  ]
+}

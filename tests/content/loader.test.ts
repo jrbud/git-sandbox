@@ -27,6 +27,7 @@ const main = {
   startingState: { setup: ['git init'] },
   successPredicate: { check: 'fileCommitted', path: 'notes.txt' },
   hints: ['Stage it, then commit.'],
+  solution: ['echo hi > notes.txt', 'git add notes.txt', 'git commit -m "Notes"'],
 }
 
 const variation = {

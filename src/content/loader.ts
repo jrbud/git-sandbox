@@ -132,6 +132,8 @@ function parseLevel(
   } else if (cheatsheet.length > 0) {
     problems.push(`${at}: variation levels must not have a cheatsheet`)
   }
+  if (!isStringArray(raw.solution) || raw.solution.length === 0)
+    problems.push(`${at}: "solution" must be a non-empty array of commands`)
   if (!isStringArray(raw.hints) || raw.hints.length === 0)
     problems.push(`${at}: "hints" must be a non-empty array of strings`)
   if (raw.successMessage !== undefined && !isString(raw.successMessage))
@@ -166,6 +168,7 @@ function parseLevel(
     successPredicate,
     hints: raw.hints as string[],
     successMessage: raw.successMessage as string | undefined,
+    solution: raw.solution as string[],
   }
 }
 

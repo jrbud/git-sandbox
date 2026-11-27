@@ -1,0 +1,150 @@
+{
+  "conceptId": "switch",
+  "sectionId": "core-basics",
+  "title": "Switch",
+  "summary": "git switch (or git checkout) moves you to another branch, changing your files to match it.",
+  "levels": [
+    {
+      "id": "core.switch.main",
+      "kind": "main",
+      "title": "Change branches",
+      "briefing": "HEAD marks where you are. git switch <branch> moves HEAD to that branch and updates your files to match its latest commit. New commits are then added to that branch. git checkout <branch> does the same thing; it is the older command.",
+      "objective": "Switch to the existing branch called feature.",
+      "cheatsheet": [
+        {
+          "command": "git switch <branch>",
+          "description": "Move to a branch",
+          "example": "git switch feature"
+        },
+        {
+          "command": "git switch -c <branch>",
+          "description": "Create a branch and move to it",
+          "example": "git switch -c login"
+        },
+        {
+          "command": "git checkout <branch>",
+          "description": "Older way to move to a branch",
+          "example": "git checkout feature"
+        },
+        {
+          "command": "git checkout -b <branch>",
+          "description": "Older way to create and move",
+          "example": "git checkout -b login"
+        }
+      ],
+      "allowedCommands": [
+        "git switch",
+        "git checkout",
+        "git branch",
+        "git status",
+        "git log",
+        "git add",
+        "git commit"
+      ],
+      "startingState": {
+        "files": { "app.js": "v1\n" },
+        "setup": [
+          "git init",
+          "git add .",
+          "git commit -m \"First version\"",
+          "git switch -c feature",
+          "echo \"new feature\" > feature.txt",
+          "git add .",
+          "git commit -m \"Start feature\"",
+          "git switch main"
+        ]
+      },
+      "successPredicate": { "check": "headPointsTo", "ref": "feature" },
+      "hints": [
+        "git branch shows that you are on main.",
+        "git switch takes the branch name.",
+        "Run: git switch feature"
+      ],
+      "solution": ["git switch feature"],
+      "successMessage": "HEAD moved to feature, and feature.txt appeared because it exists on that branch."
+    },
+    {
+      "id": "core.switch.var1",
+      "kind": "variation",
+      "title": "Create and switch",
+      "objective": "Create a branch called login and switch to it, in one command.",
+      "allowedCommands": ["git switch", "git checkout", "git branch", "git status"],
+      "startingState": {
+        "files": { "app.js": "v1\n" },
+        "setup": ["git init", "git add .", "git commit -m \"First version\""]
+      },
+      "successPredicate": { "check": "headPointsTo", "ref": "login" },
+      "hints": [
+        "git switch has a flag that creates the branch first.",
+        "The flag is -c (or -b with git checkout).",
+        "Run: git switch -c login"
+      ],
+      "solution": ["git switch -c login"],
+      "successMessage": "Creating and switching in one step is the usual way to start new work."
+    },
+    {
+      "id": "core.switch.var2",
+      "kind": "variation",
+      "title": "Work on a branch",
+      "objective": "On the feature branch, commit a file called feature.txt. Then switch back to main.",
+      "allowedCommands": [
+        "git switch",
+        "git checkout",
+        "git branch",
+        "git status",
+        "git add",
+        "git commit"
+      ],
+      "startingState": {
+        "files": { "app.js": "v1\n" },
+        "setup": ["git init", "git add .", "git commit -m \"First version\"", "git branch feature"]
+      },
+      "successPredicate": {
+        "all": [
+          { "check": "fileCommitted", "path": "feature.txt", "onBranch": "feature" },
+          { "not": { "check": "fileCommitted", "path": "feature.txt", "onBranch": "main" } },
+          { "check": "headPointsTo", "ref": "main" }
+        ]
+      },
+      "hints": [
+        "Switch first, so the commit lands on feature.",
+        "Create, stage and commit the file, then switch back.",
+        "Run: git switch feature, touch feature.txt, git add feature.txt, git commit -m \"Add feature\", git switch main"
+      ],
+      "solution": [
+        "git switch feature",
+        "touch feature.txt",
+        "git add feature.txt",
+        "git commit -m \"Add feature\"",
+        "git switch main"
+      ],
+      "successMessage": "Back on main, feature.txt is gone from your folder. It is safe on the feature branch."
+    },
+    {
+      "id": "core.switch.var3",
+      "kind": "variation",
+      "title": "Detached HEAD",
+      "objective": "HEAD is pointing at an old commit instead of a branch. Get back onto main.",
+      "allowedCommands": ["git switch", "git checkout", "git branch", "git status", "git log"],
+      "startingState": {
+        "files": { "app.js": "v1\n" },
+        "setup": [
+          "git init",
+          "git add .",
+          "git commit -m \"First version\"",
+          "echo v2 > app.js",
+          "git commit -am \"Second version\"",
+          "git checkout HEAD~1"
+        ]
+      },
+      "successPredicate": { "check": "headPointsTo", "ref": "main" },
+      "hints": [
+        "git status says \"HEAD detached\".",
+        "Switching to a branch reattaches HEAD.",
+        "Run: git switch main"
+      ],
+      "solution": ["git switch main"],
+      "successMessage": "\"Detached HEAD\" just means you were looking at a commit directly. Switching to a branch fixes it."
+    }
+  ]
+}

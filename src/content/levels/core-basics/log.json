@@ -1,0 +1,156 @@
+{
+  "conceptId": "log",
+  "sectionId": "core-basics",
+  "title": "Log",
+  "summary": "git log lists the history of commits, newest first, with who made each one and why.",
+  "levels": [
+    {
+      "id": "core.log.main",
+      "kind": "main",
+      "title": "Read the history",
+      "briefing": "git log walks back through the commits from where you are now. Each entry shows the commit's id, author, date and message. Add --oneline for a short version.",
+      "objective": "Write the number of commits in the history right now into answer.txt, then commit it.",
+      "cheatsheet": [
+        {
+          "command": "git log",
+          "description": "Show the history, newest first",
+          "example": "git log"
+        },
+        {
+          "command": "git log --oneline",
+          "description": "One line per commit",
+          "example": "git log --oneline"
+        },
+        {
+          "command": "git log -n <count>",
+          "description": "Show only the latest few",
+          "example": "git log -n 2"
+        }
+      ],
+      "allowedCommands": ["git status", "git add", "git commit", "git log"],
+      "startingState": {
+        "files": { "recipe.txt": "flour\n" },
+        "setup": [
+          "git init",
+          "git add .",
+          "git commit -m \"Start the recipe\"",
+          "echo sugar >> recipe.txt",
+          "git commit -am \"Add sugar\"",
+          "echo eggs >> recipe.txt",
+          "git commit -am \"Add eggs\""
+        ]
+      },
+      "successPredicate": { "check": "fileCommitted", "path": "answer.txt", "content": "3\n" },
+      "hints": [
+        "git log --oneline shows one line per commit. Count them.",
+        "There are 3. Put that number in answer.txt.",
+        "Run: echo 3 > answer.txt, git add answer.txt, git commit -m \"Answer\""
+      ],
+      "solution": [
+        "git log --oneline",
+        "echo 3 > answer.txt",
+        "git add answer.txt",
+        "git commit -m \"Answer\""
+      ],
+      "successMessage": "git log reads the chain of commits from HEAD backwards, so you can always count and inspect your history."
+    },
+    {
+      "id": "core.log.var1",
+      "kind": "variation",
+      "title": "Who started it?",
+      "objective": "Write the author name of the very first commit into who.txt, then commit it.",
+      "allowedCommands": ["git status", "git add", "git commit", "git log"],
+      "startingState": {
+        "files": { "plan.txt": "step 1\n" },
+        "setup": [
+          "git init",
+          "git config user.name \"Ada\"",
+          "git add .",
+          "git commit -m \"Write the plan\"",
+          "git config --unset user.name",
+          "echo \"step 2\" >> plan.txt",
+          "git commit -am \"Add step 2\""
+        ]
+      },
+      "successPredicate": { "check": "fileCommitted", "path": "who.txt", "content": "Ada\n" },
+      "hints": [
+        "The first commit is at the bottom of git log.",
+        "Look at its Author line.",
+        "Run: echo Ada > who.txt, git add who.txt, git commit -m \"Add author\""
+      ],
+      "solution": [
+        "git log",
+        "echo Ada > who.txt",
+        "git add who.txt",
+        "git commit -m \"Add author\""
+      ],
+      "successMessage": "Every commit records its author, so the history shows who made each change."
+    },
+    {
+      "id": "core.log.var2",
+      "kind": "variation",
+      "title": "Same message",
+      "objective": "Make a new commit (any change) whose message is exactly the same as the first commit's message.",
+      "allowedCommands": ["git status", "git add", "git commit", "git log"],
+      "startingState": {
+        "files": { "site.html": "<p>hi</p>\n" },
+        "setup": [
+          "git init",
+          "git add .",
+          "git commit -m \"Start the project\"",
+          "echo \"<p>more</p>\" >> site.html",
+          "git commit -am \"Add a paragraph\"",
+          "echo \"<p>end</p>\" >> site.html",
+          "git commit -am \"Finish the page\""
+        ]
+      },
+      "successPredicate": {
+        "all": [
+          { "check": "commitCount", "equals": 4 },
+          { "check": "lastCommitMessage", "equals": "Start the project" }
+        ]
+      },
+      "hints": [
+        "Find the oldest commit in git log.",
+        "Make any change, stage it, and commit with that message.",
+        "Run: echo x > x.txt, git add x.txt, git commit -m \"Start the project\""
+      ],
+      "solution": ["echo x > x.txt", "git add x.txt", "git commit -m \"Start the project\""],
+      "successMessage": "Commit messages are kept forever in the log, which is why clear messages matter."
+    },
+    {
+      "id": "core.log.var3",
+      "kind": "variation",
+      "title": "The latest message",
+      "objective": "Write the latest commit's message into last.txt, then commit it.",
+      "allowedCommands": ["git status", "git add", "git commit", "git log"],
+      "startingState": {
+        "files": { "menu.txt": "soup\n" },
+        "setup": [
+          "git init",
+          "git add .",
+          "git commit -m \"Add the menu\"",
+          "echo salad >> menu.txt",
+          "git commit -am \"Update the menu\""
+        ]
+      },
+      "successPredicate": {
+        "check": "fileCommitted",
+        "path": "last.txt",
+        "content": "Update the menu\n"
+      },
+      "hints": [
+        "git log -n 1 shows only the newest commit.",
+        "Its message is \"Update the menu\".",
+        "Run: echo \"Update the menu\" > last.txt, git add last.txt, git commit -m \"Save message\""
+      ],
+      "solution": [
+        "git log -n 1",
+        "echo \"Update the menu\" > last.txt",
+        "git add last.txt",
+        "git commit -m \"Save message\""
+      ],
+      "successMessage": "The newest commit is always at the top of git log."
+    }
+  ]
+}

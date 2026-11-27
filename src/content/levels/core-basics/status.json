@@ -1,0 +1,139 @@
+{
+  "conceptId": "status",
+  "sectionId": "core-basics",
+  "title": "Status",
+  "summary": "git status shows which files are new, changed, deleted or staged, so you know what the next commit will contain.",
+  "levels": [
+    {
+      "id": "core.status.main",
+      "kind": "main",
+      "title": "What changed?",
+      "briefing": "git status compares three places: the last commit, the staging area and your folder. It lists staged changes, unstaged changes and untracked files separately.",
+      "objective": "One tracked file has changed since the last commit. Find it with git status and stage only that file. Leave scratch.txt untracked.",
+      "cheatsheet": [
+        {
+          "command": "git status",
+          "description": "List staged, changed and untracked files",
+          "example": "git status"
+        },
+        {
+          "command": "git status -s",
+          "description": "The same, one line per file",
+          "example": "git status -s"
+        },
+        {
+          "command": "git add <file>",
+          "description": "Stage one file",
+          "example": "git add menu.txt"
+        }
+      ],
+      "allowedCommands": ["git status", "git add", "git commit"],
+      "startingState": {
+        "files": { "menu.txt": "soup\n", "prices.txt": "5\n", "hours.txt": "9-5\n" },
+        "setup": [
+          "git init",
+          "git add .",
+          "git commit -m \"Add restaurant files\"",
+          "echo salad >> menu.txt",
+          "echo draft > scratch.txt"
+        ]
+      },
+      "successPredicate": {
+        "all": [
+          { "check": "fileStaged", "path": "menu.txt" },
+          { "check": "fileUntracked", "path": "scratch.txt" }
+        ]
+      },
+      "hints": [
+        "Look for the file listed as modified.",
+        "git add . would also stage scratch.txt. Name the file instead.",
+        "Run: git add menu.txt"
+      ],
+      "solution": ["git status", "git add menu.txt"],
+      "successMessage": "git status showed menu.txt as modified, so you staged exactly that file."
+    },
+    {
+      "id": "core.status.var1",
+      "kind": "variation",
+      "title": "A missing file",
+      "objective": "A tracked file was deleted. Stage the deletion.",
+      "allowedCommands": ["git status", "git add"],
+      "startingState": {
+        "files": { "a.txt": "a\n", "b.txt": "b\n" },
+        "setup": ["git init", "git add .", "git commit -m \"Add files\"", "rm b.txt"]
+      },
+      "successPredicate": {
+        "all": [
+          { "check": "fileStaged", "path": "b.txt" },
+          { "not": { "check": "fileTracked", "path": "b.txt" } }
+        ]
+      },
+      "hints": [
+        "git status lists the file as deleted.",
+        "Staging a deleted file stages its removal.",
+        "Run: git add b.txt"
+      ],
+      "solution": ["git add b.txt"],
+      "successMessage": "Deletions are changes too, and they are staged the same way."
+    },
+    {
+      "id": "core.status.var2",
+      "kind": "variation",
+      "title": "Only what is staged",
+      "objective": "Some changes are staged and some are not. Commit only the staged ones.",
+      "allowedCommands": ["git status", "git add", "git commit"],
+      "startingState": {
+        "files": { "a.txt": "a\n", "b.txt": "b\n" },
+        "setup": [
+          "git init",
+          "git add .",
+          "git commit -m \"Add files\"",
+          "echo \"new a\" > a.txt",
+          "echo \"new b\" > b.txt",
+          "git add a.txt"
+        ]
+      },
+      "successPredicate": {
+        "all": [
+          { "check": "commitCount", "equals": 2 },
+          { "check": "fileCommitted", "path": "a.txt", "content": "new a\n" },
+          { "check": "fileCommitted", "path": "b.txt", "content": "b\n" }
+        ]
+      },
+      "hints": [
+        "git status shows which change is already staged.",
+        "git commit only saves what is staged, so do not add anything else.",
+        "Run: git commit -m \"Update a\""
+      ],
+      "solution": ["git commit -m \"Update a\""],
+      "successMessage": "The unstaged change to b.txt is still waiting in your folder."
+    },
+    {
+      "id": "core.status.var3",
+      "kind": "variation",
+      "title": "A clean tree",
+      "objective": "Commit every change, including the new file, until git status says the working tree is clean.",
+      "allowedCommands": ["git status", "git add", "git commit"],
+      "startingState": {
+        "files": { "a.txt": "a\n" },
+        "setup": [
+          "git init",
+          "git add .",
+          "git commit -m \"Add a\"",
+          "echo more >> a.txt",
+          "echo new > new.txt"
+        ]
+      },
+      "successPredicate": {
+        "all": [{ "check": "workingTreeClean" }, { "check": "commitCount", "min": 2 }]
+      },
+      "hints": [
+        "There is a modified file and an untracked file.",
+        "Stage both, then commit.",
+        "Run: git add ., then git commit -m \"Save everything\""
+      ],
+      "solution": ["git add .", "git commit -m \"Save everything\""],
+      "successMessage": "\"Working tree clean\" means everything in your folder matches the last commit."
+    }
+  ]
+}

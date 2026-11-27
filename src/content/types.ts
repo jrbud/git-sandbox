@@ -30,6 +30,8 @@ export interface Level {
   hints: string[]
   /** Shown on success: why what the player did worked. */
   successMessage?: string
+  /** A known command sequence that solves the level. Used by tests; never shown to players. */
+  solution: string[]
 }
 
 /** A concept groups its main level (first) with its variation levels. */

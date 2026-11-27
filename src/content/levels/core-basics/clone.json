@@ -1,0 +1,200 @@
+{
+  "conceptId": "clone",
+  "sectionId": "core-basics",
+  "title": "Clone",
+  "summary": "git clone copies a remote repository, with its whole history, onto your machine and links it back as origin.",
+  "levels": [
+    {
+      "id": "core.clone.main",
+      "kind": "main",
+      "title": "Copy a project",
+      "briefing": "A remote is a copy of a repository on another computer, like GitHub. git clone <url> downloads every commit and branch, checks out the default branch, and remembers the address under the name origin.",
+      "objective": "Clone the project at https://example.com/team/project.git.",
+      "cheatsheet": [
+        {
+          "command": "git clone <url>",
+          "description": "Copy a remote repository here",
+          "example": "git clone https://example.com/team/project.git"
+        },
+        {
+          "command": "git branch -a",
+          "description": "List local and remote branches",
+          "example": "git branch -a"
+        },
+        {
+          "command": "git switch <branch>",
+          "description": "Start working on a remote branch",
+          "example": "git switch docs"
+        }
+      ],
+      "allowedCommands": [
+        "git clone",
+        "git status",
+        "git log",
+        "git branch",
+        "git switch",
+        "git add",
+        "git commit"
+      ],
+      "startingState": {
+        "servers": ["https://example.com/team/project.git"],
+        "setup": [
+          {
+            "workspace": "teammate",
+            "commands": [
+              "git init",
+              "echo \"# Project\" > README.md",
+              "git add .",
+              "git commit -m \"Start project\"",
+              "git remote add origin https://example.com/team/project.git",
+              "git push -u origin main"
+            ]
+          }
+        ]
+      },
+      "successPredicate": {
+        "all": [
+          {
+            "check": "remoteExists",
+            "name": "origin",
+            "url": "https://example.com/team/project.git"
+          },
+          { "check": "fileInWorkingDirectory", "path": "README.md" }
+        ]
+      },
+      "hints": [
+        "git clone takes the address of the repository.",
+        "Copy the address from the goal.",
+        "Run: git clone https://example.com/team/project.git"
+      ],
+      "solution": ["git clone https://example.com/team/project.git"],
+      "successMessage": "You now have the full history locally, and origin points back to where it came from."
+    },
+    {
+      "id": "core.clone.var1",
+      "kind": "variation",
+      "title": "Another branch",
+      "objective": "Clone https://example.com/team/project.git, then switch to its docs branch.",
+      "allowedCommands": ["git clone", "git switch", "git branch", "git status"],
+      "startingState": {
+        "servers": ["https://example.com/team/project.git"],
+        "setup": [
+          {
+            "workspace": "teammate",
+            "commands": [
+              "git init",
+              "echo \"# Project\" > README.md",
+              "git add .",
+              "git commit -m \"Start project\"",
+              "git remote add origin https://example.com/team/project.git",
+              "git push -u origin main",
+              "git switch -c docs",
+              "echo \"# Docs\" > docs.md",
+              "git add .",
+              "git commit -m \"Add docs\"",
+              "git push -u origin docs"
+            ]
+          }
+        ]
+      },
+      "successPredicate": {
+        "all": [
+          { "check": "headPointsTo", "ref": "docs" },
+          { "check": "upstreamIs", "branch": "docs", "remote": "origin", "remoteBranch": "docs" }
+        ]
+      },
+      "hints": [
+        "After cloning, git branch -a shows remotes/origin/docs.",
+        "Switching to docs creates a local branch that tracks origin/docs.",
+        "Run: git clone https://example.com/team/project.git, then git switch docs"
+      ],
+      "solution": ["git clone https://example.com/team/project.git", "git switch docs"],
+      "successMessage": "Cloning brings every branch. Switching to one makes a local branch that tracks it."
+    },
+    {
+      "id": "core.clone.var2",
+      "kind": "variation",
+      "title": "Your first contribution",
+      "objective": "Clone https://example.com/team/project.git, then commit a file called CONTRIBUTORS.txt containing your name.",
+      "allowedCommands": ["git clone", "git status", "git add", "git commit", "git log"],
+      "startingState": {
+        "servers": ["https://example.com/team/project.git"],
+        "setup": [
+          {
+            "workspace": "teammate",
+            "commands": [
+              "git init",
+              "echo \"# Project\" > README.md",
+              "git add .",
+              "git commit -m \"Start project\"",
+              "git remote add origin https://example.com/team/project.git",
+              "git push -u origin main"
+            ]
+          }
+        ]
+      },
+      "successPredicate": {
+        "all": [
+          { "check": "remoteExists", "name": "origin" },
+          { "check": "fileCommitted", "path": "CONTRIBUTORS.txt" }
+        ]
+      },
+      "hints": [
+        "Clone first, then work as usual.",
+        "Create the file, stage it and commit it.",
+        "Run: git clone https://example.com/team/project.git, echo Sam > CONTRIBUTORS.txt, git add ., git commit -m \"Add contributor\""
+      ],
+      "solution": [
+        "git clone https://example.com/team/project.git",
+        "echo Sam > CONTRIBUTORS.txt",
+        "git add .",
+        "git commit -m \"Add contributor\""
+      ],
+      "successMessage": "A clone is a full repository: you can commit to it straight away."
+    },
+    {
+      "id": "core.clone.var3",
+      "kind": "variation",
+      "title": "How much history?",
+      "objective": "Clone https://example.com/team/project.git and write the number of commits it has into count.txt.",
+      "allowedCommands": ["git clone", "git log", "git status"],
+      "startingState": {
+        "servers": ["https://example.com/team/project.git"],
+        "setup": [
+          {
+            "workspace": "teammate",
+            "commands": [
+              "git init",
+              "echo \"# Project\" > README.md",
+              "git add .",
+              "git commit -m \"Start project\"",
+              "echo \"Install it\" >> README.md",
+              "git commit -am \"Add install steps\"",
+              "echo \"Run it\" >> README.md",
+              "git commit -am \"Add usage\"",
+              "git remote add origin https://example.com/team/project.git",
+              "git push -u origin main"
+            ]
+          }
+        ]
+      },
+      "successPredicate": {
+        "all": [
+          { "check": "remoteExists", "name": "origin" },
+          { "check": "fileInWorkingDirectory", "path": "count.txt", "content": "3\n" }
+        ]
+      },
+      "hints": [
+        "A clone includes the whole history.",
+        "git log --oneline shows 3 commits.",
+        "Run: git clone https://example.com/team/project.git, git log --oneline, echo 3 > count.txt"
+      ],
+      "solution": [
+        "git clone https://example.com/team/project.git",
+        "git log --oneline",
+        "echo 3 > count.txt"
+      ],
+      "successMessage": "Every commit came with the clone, not just the latest files."
+    }
+  ]
+}

@@ -1,0 +1,39 @@
+{
+  "core-basics": [
+    {
+      "id": "what-is-a-commit",
+      "objective": "Explain what a commit is and why the commit graph looks the way it does.",
+      "concepts": ["commit"]
+    },
+    {
+      "id": "everyday-commands",
+      "objective": "Use git init, git add, git status, git log and git diff confidently.",
+      "concepts": ["init", "add", "status", "log", "diff"]
+    },
+    {
+      "id": "branches-and-head",
+      "objective": "Create and switch branches and understand what HEAD means.",
+      "concepts": ["branch", "switch"]
+    },
+    {
+      "id": "merging",
+      "objective": "Merge one branch into another and understand fast-forward vs. a merge commit.",
+      "concepts": ["merge"]
+    },
+    {
+      "id": "remotes",
+      "objective": "Clone a remote, and push, pull and fetch to and from it.",
+      "concepts": ["clone", "remote", "push", "fetch", "pull"]
+    },
+    {
+      "id": "gitignore",
+      "objective": "Write a .gitignore and explain what it does.",
+      "concepts": ["gitignore"]
+    },
+    {
+      "id": "identity",
+      "objective": "Set your identity with git config (user.name / user.email) and explain why commits record an author.",
+      "concepts": ["config"]
+    }
+  ]
+}

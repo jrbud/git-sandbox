@@ -1,0 +1,120 @@
+{
+  "conceptId": "add",
+  "sectionId": "core-basics",
+  "title": "Add",
+  "summary": "git add stages changes: it chooses exactly what goes into the next commit.",
+  "levels": [
+    {
+      "id": "core.add.main",
+      "kind": "main",
+      "title": "Stage a file",
+      "briefing": "Git does not save every file automatically. The staging area is a list of what will go into your next commit, and git add puts a file's current content on that list.",
+      "objective": "Stage hello.txt, but not notes.txt.",
+      "cheatsheet": [
+        {
+          "command": "git add <file>",
+          "description": "Stage one file",
+          "example": "git add hello.txt"
+        },
+        {
+          "command": "git add .",
+          "description": "Stage everything in the folder",
+          "example": "git add ."
+        },
+        {
+          "command": "git status",
+          "description": "See what is staged and what is not",
+          "example": "git status"
+        }
+      ],
+      "allowedCommands": ["git init", "git status", "git add"],
+      "startingState": {
+        "files": { "hello.txt": "Hello\n", "notes.txt": "Remember the milk\n" },
+        "setup": ["git init"]
+      },
+      "successPredicate": {
+        "all": [
+          { "check": "fileStaged", "path": "hello.txt" },
+          { "not": { "check": "fileTracked", "path": "notes.txt" } }
+        ]
+      },
+      "hints": [
+        "git status lists both files as untracked.",
+        "git add takes the name of the file you want to stage.",
+        "Run: git add hello.txt"
+      ],
+      "solution": ["git add hello.txt"],
+      "successMessage": "hello.txt is now staged for the next commit, and notes.txt is still untracked."
+    },
+    {
+      "id": "core.add.var1",
+      "kind": "variation",
+      "title": "Stage everything",
+      "objective": "Stage every file in this folder at once.",
+      "allowedCommands": ["git status", "git add"],
+      "startingState": {
+        "files": { "a.txt": "a\n", "b.txt": "b\n", "c.txt": "c\n" },
+        "setup": ["git init"]
+      },
+      "successPredicate": {
+        "all": [
+          { "check": "fileTracked", "path": "a.txt" },
+          { "check": "fileTracked", "path": "b.txt" },
+          { "check": "fileTracked", "path": "c.txt" }
+        ]
+      },
+      "hints": [
+        "You could add the files one by one, but there is a shortcut.",
+        "A dot means \"everything in this folder\".",
+        "Run: git add ."
+      ],
+      "solution": ["git add ."],
+      "successMessage": "git add . stages every change in the folder in one go."
+    },
+    {
+      "id": "core.add.var2",
+      "kind": "variation",
+      "title": "Stage a folder",
+      "objective": "Stage only the files inside the src folder.",
+      "allowedCommands": ["git status", "git add"],
+      "startingState": {
+        "files": {
+          "README.md": "# App\n",
+          "src/app.js": "app\n",
+          "src/util.js": "util\n"
+        },
+        "setup": ["git init"]
+      },
+      "successPredicate": {
+        "all": [
+          { "check": "fileTracked", "path": "src/app.js" },
+          { "check": "fileTracked", "path": "src/util.js" },
+          { "not": { "check": "fileTracked", "path": "README.md" } }
+        ]
+      },
+      "hints": [
+        "git add accepts a folder name as well as a file name.",
+        "Giving a folder stages everything inside it.",
+        "Run: git add src"
+      ],
+      "solution": ["git add src"],
+      "successMessage": "Adding a folder stages every file inside it, and nothing outside it."
+    },
+    {
+      "id": "core.add.var3",
+      "kind": "variation",
+      "title": "Create and stage",
+      "objective": "Create a file called todo.txt and stage it.",
+      "allowedCommands": ["git status", "git add"],
+      "startingState": { "setup": ["git init"] },
+      "successPredicate": { "check": "fileStaged", "path": "todo.txt" },
+      "hints": [
+        "The file has to exist before you can stage it.",
+        "Create it with touch or echo, then add it.",
+        "Run: touch todo.txt, then git add todo.txt"
+      ],
+      "solution": ["touch todo.txt", "git add todo.txt"],
+      "successMessage": "New files are untracked until you stage them with git add."
+    }
+  ]
+}

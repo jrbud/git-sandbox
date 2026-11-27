@@ -1,0 +1,162 @@
+{
+  "conceptId": "diff",
+  "sectionId": "core-basics",
+  "title": "Diff",
+  "summary": "git diff shows exactly which lines changed: removed lines start with -, added lines with +.",
+  "levels": [
+    {
+      "id": "core.diff.main",
+      "kind": "main",
+      "title": "Spot the change",
+      "briefing": "git diff compares your files with what is staged. Lines starting with - were removed and lines starting with + were added. git diff --staged compares what is staged with the last commit.",
+      "objective": "One line in poem.txt was changed. Write the old version of that line into old.txt and commit only old.txt.",
+      "cheatsheet": [
+        { "command": "git diff", "description": "Changes not staged yet", "example": "git diff" },
+        {
+          "command": "git diff --staged",
+          "description": "Changes staged for the next commit",
+          "example": "git diff --staged"
+        },
+        {
+          "command": "git diff <file>",
+          "description": "Changes in one file",
+          "example": "git diff poem.txt"
+        }
+      ],
+      "allowedCommands": ["git status", "git add", "git commit", "git diff"],
+      "startingState": {
+        "files": { "poem.txt": "Roses are red\nViolets are blue\nGit is great\nAnd so are you\n" },
+        "setup": [
+          "git init",
+          "git add .",
+          "git commit -m \"Add poem\"",
+          "echo \"Roses are red\" > poem.txt",
+          "echo \"Violets are blue\" >> poem.txt",
+          "echo \"Git is awesome\" >> poem.txt",
+          "echo \"And so are you\" >> poem.txt"
+        ]
+      },
+      "successPredicate": {
+        "all": [
+          { "check": "fileCommitted", "path": "old.txt", "content": "Git is great\n" },
+          {
+            "check": "fileCommitted",
+            "path": "poem.txt",
+            "content": "Roses are red\nViolets are blue\nGit is great\nAnd so are you\n"
+          }
+        ]
+      },
+      "hints": [
+        "In git diff, the old line starts with -.",
+        "The old line is \"Git is great\". Do not stage poem.txt.",
+        "Run: echo \"Git is great\" > old.txt, git add old.txt, git commit -m \"Save old line\""
+      ],
+      "solution": [
+        "git diff",
+        "echo \"Git is great\" > old.txt",
+        "git add old.txt",
+        "git commit -m \"Save old line\""
+      ],
+      "successMessage": "The - line in the diff was the old version, and poem.txt's change is still unstaged."
+    },
+    {
+      "id": "core.diff.var1",
+      "kind": "variation",
+      "title": "Staged changes",
+      "objective": "A change to list.txt is already staged. Find the item it added, write it into item.txt, and commit everything.",
+      "allowedCommands": ["git status", "git add", "git commit", "git diff"],
+      "startingState": {
+        "files": { "list.txt": "milk\neggs\n" },
+        "setup": [
+          "git init",
+          "git add .",
+          "git commit -m \"Start list\"",
+          "echo bread >> list.txt",
+          "git add list.txt"
+        ]
+      },
+      "successPredicate": {
+        "all": [
+          { "check": "fileCommitted", "path": "item.txt", "content": "bread\n" },
+          { "check": "workingTreeClean" }
+        ]
+      },
+      "hints": [
+        "Plain git diff shows nothing, because the change is staged.",
+        "git diff --staged shows the added line.",
+        "Run: echo bread > item.txt, git add item.txt, git commit -m \"Add bread\""
+      ],
+      "solution": [
+        "git diff --staged",
+        "echo bread > item.txt",
+        "git add item.txt",
+        "git commit -m \"Add bread\""
+      ],
+      "successMessage": "git diff --staged shows exactly what your next commit will contain."
+    },
+    {
+      "id": "core.diff.var2",
+      "kind": "variation",
+      "title": "The removed line",
+      "objective": "Two files changed. Stage only the file where a line was removed.",
+      "allowedCommands": ["git status", "git add", "git diff"],
+      "startingState": {
+        "files": { "a.txt": "one\ntwo\n", "b.txt": "x\n" },
+        "setup": [
+          "git init",
+          "git add .",
+          "git commit -m \"Add files\"",
+          "echo one > a.txt",
+          "echo y >> b.txt"
+        ]
+      },
+      "successPredicate": {
+        "all": [
+          { "check": "fileStaged", "path": "a.txt" },
+          { "not": { "check": "fileStaged", "path": "b.txt" } }
+        ]
+      },
+      "hints": [
+        "Removed lines start with - in the diff.",
+        "a.txt lost the line \"two\".",
+        "Run: git add a.txt"
+      ],
+      "solution": ["git diff", "git add a.txt"],
+      "successMessage": "Reading the diff before staging helps you commit exactly what you meant to."
+    },
+    {
+      "id": "core.diff.var3",
+      "kind": "variation",
+      "title": "The new word",
+      "objective": "One word in greeting.txt changed. Write the new word into word.txt, then commit both files.",
+      "allowedCommands": ["git status", "git add", "git commit", "git diff"],
+      "startingState": {
+        "files": { "greeting.txt": "Hello world\n" },
+        "setup": [
+          "git init",
+          "git add .",
+          "git commit -m \"Add greeting\"",
+          "echo \"Hello there\" > greeting.txt"
+        ]
+      },
+      "successPredicate": {
+        "all": [
+          { "check": "fileCommitted", "path": "word.txt", "content": "there\n" },
+          { "check": "fileCommitted", "path": "greeting.txt", "content": "Hello there\n" }
+        ]
+      },
+      "hints": [
+        "Compare the - line and the + line.",
+        "\"world\" became \"there\".",
+        "Run: echo there > word.txt, git add ., git commit -m \"New greeting\""
+      ],
+      "solution": [
+        "git diff",
+        "echo there > word.txt",
+        "git add .",
+        "git commit -m \"New greeting\""
+      ],
+      "successMessage": "A diff shows whole lines, so a one-word change appears as one line removed and one added."
+    }
+  ]
+}

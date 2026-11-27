@@ -1,0 +1,147 @@
+{
+  "conceptId": "gitignore",
+  "sectionId": "core-basics",
+  "title": ".gitignore",
+  "summary": "A .gitignore file lists files git should leave alone, like logs, build output and secrets.",
+  "levels": [
+    {
+      "id": "core.gitignore.main",
+      "kind": "main",
+      "title": "Ignore a file",
+      "briefing": "Some files should never be committed. Each line of a .gitignore file is a name or pattern; matching files stop showing up as untracked, and git add skips them. The .gitignore itself is committed so everyone shares the same rules.",
+      "objective": "Make git ignore debug.log, then commit your .gitignore.",
+      "cheatsheet": [
+        {
+          "command": "echo \"name\" > .gitignore",
+          "description": "Ignore one file",
+          "example": "echo \"debug.log\" > .gitignore"
+        },
+        {
+          "command": "*.ext",
+          "description": "Pattern: every file ending in .ext",
+          "example": "*.log"
+        },
+        { "command": "folder/", "description": "Pattern: a whole folder", "example": "build/" },
+        {
+          "command": "!name",
+          "description": "Pattern: an exception to an earlier rule",
+          "example": "!keep.log"
+        }
+      ],
+      "allowedCommands": ["git status", "git add", "git commit"],
+      "startingState": {
+        "files": { "app.js": "run()\n", "debug.log": "error at line 3\n" },
+        "setup": ["git init", "git add app.js", "git commit -m \"Add app\""]
+      },
+      "successPredicate": {
+        "all": [
+          { "check": "fileIgnored", "path": "debug.log" },
+          { "not": { "check": "fileTracked", "path": "debug.log" } },
+          { "check": "fileCommitted", "path": ".gitignore" }
+        ]
+      },
+      "hints": [
+        "Create a file called .gitignore containing the name to ignore.",
+        "After that, debug.log disappears from git status. Commit .gitignore.",
+        "Run: echo debug.log > .gitignore, git add .gitignore, git commit -m \"Ignore log\""
+      ],
+      "solution": [
+        "echo debug.log > .gitignore",
+        "git add .gitignore",
+        "git commit -m \"Ignore log\""
+      ],
+      "successMessage": "debug.log stays in your folder, but git no longer offers to track it."
+    },
+    {
+      "id": "core.gitignore.var1",
+      "kind": "variation",
+      "title": "Every log file",
+      "objective": "Ignore every file ending in .log (but not app.js), then commit your .gitignore.",
+      "allowedCommands": ["git status", "git add", "git commit"],
+      "startingState": {
+        "files": { "app.js": "run()\n", "a.log": "a\n", "b.log": "b\n" },
+        "setup": ["git init"]
+      },
+      "successPredicate": {
+        "all": [
+          { "check": "fileIgnored", "path": "a.log" },
+          { "check": "fileIgnored", "path": "b.log" },
+          { "not": { "check": "fileIgnored", "path": "app.js" } },
+          { "check": "fileCommitted", "path": ".gitignore" }
+        ]
+      },
+      "hints": [
+        "A * matches any name.",
+        "One line covers every .log file.",
+        "Run: echo \"*.log\" > .gitignore, git add .gitignore, git commit -m \"Ignore logs\""
+      ],
+      "solution": [
+        "echo \"*.log\" > .gitignore",
+        "git add .gitignore",
+        "git commit -m \"Ignore logs\""
+      ],
+      "successMessage": "Patterns let one line ignore any number of matching files."
+    },
+    {
+      "id": "core.gitignore.var2",
+      "kind": "variation",
+      "title": "A whole folder",
+      "objective": "Ignore everything in the build folder, then commit your .gitignore.",
+      "allowedCommands": ["git status", "git add", "git commit"],
+      "startingState": {
+        "files": { "src/main.js": "main\n", "build/out.js": "out\n", "build/out.map": "map\n" },
+        "setup": ["git init"]
+      },
+      "successPredicate": {
+        "all": [
+          { "check": "fileIgnored", "path": "build/out.js" },
+          { "check": "fileIgnored", "path": "build/out.map" },
+          { "not": { "check": "fileIgnored", "path": "src/main.js" } },
+          { "check": "fileCommitted", "path": ".gitignore" }
+        ]
+      },
+      "hints": [
+        "A pattern ending in / matches a folder.",
+        "Ignoring the folder ignores everything inside it.",
+        "Run: echo \"build/\" > .gitignore, git add .gitignore, git commit -m \"Ignore build\""
+      ],
+      "solution": [
+        "echo \"build/\" > .gitignore",
+        "git add .gitignore",
+        "git commit -m \"Ignore build\""
+      ],
+      "successMessage": "Build output can always be recreated, so it is normally ignored."
+    },
+    {
+      "id": "core.gitignore.var3",
+      "kind": "variation",
+      "title": "An exception",
+      "objective": "Ignore every .tmp file except keep.tmp, then commit your .gitignore.",
+      "allowedCommands": ["git status", "git add", "git commit"],
+      "startingState": {
+        "files": { "a.tmp": "a\n", "b.tmp": "b\n", "keep.tmp": "keep\n" },
+        "setup": ["git init"]
+      },
+      "successPredicate": {
+        "all": [
+          { "check": "fileIgnored", "path": "a.tmp" },
+          { "check": "fileIgnored", "path": "b.tmp" },
+          { "not": { "check": "fileIgnored", "path": "keep.tmp" } },
+          { "check": "fileCommitted", "path": ".gitignore" }
+        ]
+      },
+      "hints": [
+        "Ignore *.tmp first, then add an exception on the next line.",
+        "A line starting with ! un-ignores a file.",
+        "Run: echo \"*.tmp\" > .gitignore, echo \"!keep.tmp\" >> .gitignore, git add .gitignore, git commit -m \"Ignore tmp\""
+      ],
+      "solution": [
+        "echo \"*.tmp\" > .gitignore",
+        "echo \"!keep.tmp\" >> .gitignore",
+        "git add .gitignore",
+        "git commit -m \"Ignore tmp\""
+      ],
+      "successMessage": "Later lines win, so the ! rule makes an exception to the *.tmp rule above it."
+    }
+  ]
+}

@@ -1,0 +1,137 @@
+{
+  "conceptId": "remote",
+  "sectionId": "core-basics",
+  "title": "Remote",
+  "summary": "git remote manages the named addresses, like origin, that your repository pushes to and fetches from.",
+  "levels": [
+    {
+      "id": "core.remote.main",
+      "kind": "main",
+      "title": "Add a remote",
+      "briefing": "A remote is a short name for another repository's address. Cloning adds one called origin automatically; for a repository you started yourself, you add it with git remote add.",
+      "objective": "Connect this repository to https://example.com/team/notes.git under the name origin.",
+      "cheatsheet": [
+        {
+          "command": "git remote -v",
+          "description": "List remotes and their addresses",
+          "example": "git remote -v"
+        },
+        {
+          "command": "git remote add <name> <url>",
+          "description": "Add a remote",
+          "example": "git remote add origin https://example.com/team/notes.git"
+        },
+        {
+          "command": "git remote remove <name>",
+          "description": "Remove a remote",
+          "example": "git remote remove old"
+        }
+      ],
+      "allowedCommands": ["git remote", "git status", "git log"],
+      "startingState": {
+        "servers": ["https://example.com/team/notes.git"],
+        "files": { "notes.txt": "first note\n" },
+        "setup": ["git init", "git add .", "git commit -m \"First note\""]
+      },
+      "successPredicate": {
+        "check": "remoteExists",
+        "name": "origin",
+        "url": "https://example.com/team/notes.git"
+      },
+      "hints": [
+        "git remote -v shows there are no remotes yet.",
+        "git remote add takes a name and an address.",
+        "Run: git remote add origin https://example.com/team/notes.git"
+      ],
+      "solution": ["git remote add origin https://example.com/team/notes.git"],
+      "successMessage": "origin is now a nickname for that address. Nothing was uploaded yet: that is what push does."
+    },
+    {
+      "id": "core.remote.var1",
+      "kind": "variation",
+      "title": "A different name",
+      "objective": "Add https://example.com/team/notes.git as a remote called upstream.",
+      "allowedCommands": ["git remote", "git status"],
+      "startingState": {
+        "servers": ["https://example.com/team/notes.git"],
+        "files": { "notes.txt": "first note\n" },
+        "setup": ["git init", "git add .", "git commit -m \"First note\""]
+      },
+      "successPredicate": {
+        "check": "remoteExists",
+        "name": "upstream",
+        "url": "https://example.com/team/notes.git"
+      },
+      "hints": [
+        "origin is only a convention. Any name works.",
+        "Use upstream as the name.",
+        "Run: git remote add upstream https://example.com/team/notes.git"
+      ],
+      "solution": ["git remote add upstream https://example.com/team/notes.git"],
+      "successMessage": "A repository can have several remotes, each with its own name."
+    },
+    {
+      "id": "core.remote.var2",
+      "kind": "variation",
+      "title": "Wrong address",
+      "objective": "origin points to the wrong address. Make it point to https://example.com/team/notes.git.",
+      "allowedCommands": ["git remote", "git status"],
+      "startingState": {
+        "servers": ["https://example.com/team/notes.git"],
+        "files": { "notes.txt": "first note\n" },
+        "setup": [
+          "git init",
+          "git add .",
+          "git commit -m \"First note\"",
+          "git remote add origin https://example.com/team/wrong.git"
+        ]
+      },
+      "successPredicate": {
+        "check": "remoteExists",
+        "name": "origin",
+        "url": "https://example.com/team/notes.git"
+      },
+      "hints": [
+        "git remote -v shows the wrong address.",
+        "Remove origin, then add it again with the right address.",
+        "Run: git remote remove origin, then git remote add origin https://example.com/team/notes.git"
+      ],
+      "solution": [
+        "git remote remove origin",
+        "git remote add origin https://example.com/team/notes.git"
+      ],
+      "successMessage": "Removing and re-adding a remote only changes the nickname, not any files."
+    },
+    {
+      "id": "core.remote.var3",
+      "kind": "variation",
+      "title": "Tidy up remotes",
+      "objective": "This repository has two remotes. Remove the one called old and keep origin.",
+      "allowedCommands": ["git remote", "git status"],
+      "startingState": {
+        "servers": ["https://example.com/team/notes.git"],
+        "files": { "notes.txt": "first note\n" },
+        "setup": [
+          "git init",
+          "git add .",
+          "git commit -m \"First note\"",
+          "git remote add origin https://example.com/team/notes.git",
+          "git remote add old https://example.com/archive/notes.git"
+        ]
+      },
+      "successPredicate": {
+        "all": [
+          { "not": { "check": "remoteExists", "name": "old" } },
+          { "check": "remoteExists", "name": "origin" }
+        ]
+      },
+      "hints": [
+        "git remote -v lists both.",
+        "git remote remove takes the name to remove.",
+        "Run: git remote remove old"
+      ],
+      "solution": ["git remote -v", "git remote remove old"],
+      "successMessage": "Only the old nickname is gone; origin is untouched."
+    }
+  ]
+}

@@ -1,14 +1,14 @@
 {
   "conceptId": "commit",
   "sectionId": "core-basics",
-  "title": "Commits",
-  "summary": "A commit saves a snapshot of your staged files, with a message, so you can see and return to every version of your project.",
+  "title": "Commit",
+  "summary": "git commit saves a snapshot of your staged files, with a message, so every version of your project is kept.",
   "levels": [
     {
       "id": "core.commit.main",
       "kind": "main",
       "title": "Your first commit",
-      "briefing": "A commit is a snapshot of your project at a moment in time. You choose what goes into the snapshot by staging files with git add, then save it with git commit.",
+      "briefing": "A commit is a snapshot of your project at one moment, with a message saying what changed. Each commit points back to the one before it, which is why the history forms a chain in the graph.",
       "objective": "Create a file called notes.txt with any text in it, then commit it.",
       "cheatsheet": [
         {
@@ -16,7 +16,6 @@
           "description": "Write text into a file",
           "example": "echo \"hello\" > notes.txt"
         },
-        { "command": "git status", "description": "See what has changed", "example": "git status" },
         {
           "command": "git add <file>",
           "description": "Stage a file for the next commit",
@@ -45,18 +44,23 @@
         ]
       },
       "hints": [
-        "First the file has to exist. You can create it in the terminal or with the file editor.",
-        "Once notes.txt exists, stage it, then commit it with a message.",
+        "First the file has to exist. Create it in the terminal or the file editor.",
+        "Stage notes.txt, then commit it with a message.",
         "Run: echo \"my notes\" > notes.txt, then git add notes.txt, then git commit -m \"Add notes\""
       ],
-      "successMessage": "You staged notes.txt and saved it in a new commit. That commit is now part of your project history, which you can see in the graph."
+      "solution": [
+        "echo \"my notes\" > notes.txt",
+        "git add notes.txt",
+        "git commit -m \"Add notes\""
+      ],
+      "successMessage": "Your commit points back to the README commit, so the graph now shows a chain of two."
     },
     {
       "id": "core.commit.var1",
       "kind": "variation",
-      "title": "Commit two files at once",
+      "title": "Two files, one commit",
       "objective": "Create todo.txt and ideas.txt, then save both in a single new commit.",
-      "allowedCommands": ["git status", "git add", "git commit", "git log", "git diff"],
+      "allowedCommands": ["git status", "git add", "git commit", "git log"],
       "startingState": {
         "files": { "README.md": "# My project\n" },
         "setup": ["git init", "git add README.md", "git commit -m \"Add README\""]
@@ -69,11 +73,75 @@
         ]
       },
       "hints": [
-        "A single commit can contain several files. Stage both before you commit.",
-        "Create both files, add both, then commit once.",
+        "A single commit can contain several files.",
+        "Stage both files before you commit.",
         "Run: touch todo.txt ideas.txt, then git add todo.txt ideas.txt, then git commit -m \"Add lists\""
       ],
-      "successMessage": "Both files went into one commit, because a commit saves everything that is staged at that moment."
+      "solution": [
+        "touch todo.txt ideas.txt",
+        "git add todo.txt ideas.txt",
+        "git commit -m \"Add lists\""
+      ],
+      "successMessage": "A commit saves everything that is staged at that moment."
+    },
+    {
+      "id": "core.commit.var2",
+      "kind": "variation",
+      "title": "Two separate commits",
+      "objective": "Commit a.txt on its own, then commit b.txt in a second commit.",
+      "allowedCommands": ["git status", "git add", "git commit", "git log"],
+      "startingState": {
+        "files": { "README.md": "# My project\n", "a.txt": "a\n", "b.txt": "b\n" },
+        "setup": ["git init", "git add README.md", "git commit -m \"Add README\""]
+      },
+      "successPredicate": {
+        "all": [
+          { "check": "commitCount", "equals": 3 },
+          { "check": "fileCommitted", "path": "a.txt", "onBranch": "HEAD~1" },
+          { "not": { "check": "fileCommitted", "path": "b.txt", "onBranch": "HEAD~1" } },
+          { "check": "fileCommitted", "path": "b.txt" }
+        ]
+      },
+      "hints": [
+        "Only staged files go into a commit.",
+        "Stage and commit a.txt first. Then do the same for b.txt.",
+        "Run: git add a.txt, git commit -m \"Add a\", git add b.txt, git commit -m \"Add b\""
+      ],
+      "solution": [
+        "git add a.txt",
+        "git commit -m \"Add a\"",
+        "git add b.txt",
+        "git commit -m \"Add b\""
+      ],
+      "successMessage": "Small, separate commits make the history easier to read."
+    },
+    {
+      "id": "core.commit.var3",
+      "kind": "variation",
+      "title": "Fix and commit",
+      "objective": "README.md says \"# Helo\". Change it to \"# Hello\" and commit with the message \"Fix typo\".",
+      "allowedCommands": ["git status", "git add", "git commit", "git log"],
+      "startingState": {
+        "files": { "README.md": "# Helo\n" },
+        "setup": ["git init", "git add README.md", "git commit -m \"Add README\""]
+      },
+      "successPredicate": {
+        "all": [
+          { "check": "fileCommitted", "path": "README.md", "content": "# Hello\n" },
+          { "check": "lastCommitMessage", "equals": "Fix typo" }
+        ]
+      },
+      "hints": [
+        "Edit the file first, in the editor or with echo.",
+        "A changed file must be staged again before committing.",
+        "Run: echo \"# Hello\" > README.md, git add README.md, git commit -m \"Fix typo\""
+      ],
+      "solution": [
+        "echo \"# Hello\" > README.md",
+        "git add README.md",
+        "git commit -m \"Fix typo\""
+      ],
+      "successMessage": "Changing a committed file and committing again records a new version; the old one is still in the history."
     }
   ]
 }

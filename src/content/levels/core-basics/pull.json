@@ -1,0 +1,226 @@
+{
+  "conceptId": "pull",
+  "sectionId": "core-basics",
+  "title": "Pull",
+  "summary": "git pull fetches new commits from a remote and merges them into your current branch in one step.",
+  "levels": [
+    {
+      "id": "core.pull.main",
+      "kind": "main",
+      "title": "Get the latest",
+      "briefing": "git pull is git fetch followed by git merge. It downloads the remote's new commits and merges them into the branch you are on, fast-forwarding when it can and making a merge commit when it must.",
+      "objective": "A teammate pushed a new commit. Bring it into your main branch with one command.",
+      "cheatsheet": [
+        {
+          "command": "git pull",
+          "description": "Fetch and merge from the tracked branch",
+          "example": "git pull"
+        },
+        {
+          "command": "git pull <remote> <branch>",
+          "description": "Pull a specific remote branch",
+          "example": "git pull origin docs"
+        },
+        {
+          "command": "git push",
+          "description": "Send your commits back after pulling",
+          "example": "git push"
+        }
+      ],
+      "allowedCommands": [
+        "git pull",
+        "git push",
+        "git fetch",
+        "git merge",
+        "git status",
+        "git log",
+        "git add",
+        "git commit",
+        "git branch"
+      ],
+      "startingState": {
+        "servers": ["https://example.com/team/project.git"],
+        "setup": [
+          {
+            "workspace": "teammate",
+            "commands": [
+              "git init",
+              "echo \"# Project\" > README.md",
+              "git add .",
+              "git commit -m \"Start project\"",
+              "git remote add origin https://example.com/team/project.git",
+              "git push -u origin main"
+            ]
+          },
+          "git clone https://example.com/team/project.git",
+          {
+            "workspace": "teammate",
+            "commands": [
+              "echo \"todo\" > todo.txt",
+              "git add .",
+              "git commit -m \"Add todo list\"",
+              "git push"
+            ]
+          }
+        ]
+      },
+      "successPredicate": {
+        "all": [
+          { "check": "remoteBranchMatches", "remote": "origin", "branch": "main" },
+          { "check": "fileInWorkingDirectory", "path": "todo.txt" }
+        ]
+      },
+      "hints": [
+        "Your main does not have todo.txt yet.",
+        "One command fetches and merges.",
+        "Run: git pull"
+      ],
+      "solution": ["git pull"],
+      "successMessage": "Your main had nothing new, so pull fast-forwarded it to your teammate's commit."
+    },
+    {
+      "id": "core.pull.var1",
+      "kind": "variation",
+      "title": "Rejected push",
+      "objective": "Your push will be rejected because a teammate pushed first. Pull their work, then push yours.",
+      "allowedCommands": ["git pull", "git push", "git status", "git log", "git add", "git commit"],
+      "startingState": {
+        "servers": ["https://example.com/team/project.git"],
+        "setup": [
+          {
+            "workspace": "teammate",
+            "commands": [
+              "git init",
+              "echo \"# Project\" > README.md",
+              "git add .",
+              "git commit -m \"Start project\"",
+              "git remote add origin https://example.com/team/project.git",
+              "git push -u origin main"
+            ]
+          },
+          "git clone https://example.com/team/project.git",
+          "echo \"mine\" > mine.txt",
+          "git add .",
+          "git commit -m \"Add my file\"",
+          {
+            "workspace": "teammate",
+            "commands": [
+              "echo \"theirs\" > theirs.txt",
+              "git add .",
+              "git commit -m \"Add their file\"",
+              "git push"
+            ]
+          }
+        ]
+      },
+      "successPredicate": {
+        "all": [
+          { "check": "isMergeCommit", "ref": "main" },
+          { "check": "remoteBranchMatches", "remote": "origin", "branch": "main" }
+        ]
+      },
+      "hints": [
+        "Try git push: it says the remote contains work you do not have.",
+        "Pull first. Both of you made commits, so git creates a merge commit.",
+        "Run: git pull, then git push"
+      ],
+      "solution": ["git pull", "git push"],
+      "successMessage": "Pulling merged your teammate's commit with yours, so the push could go through."
+    },
+    {
+      "id": "core.pull.var2",
+      "kind": "variation",
+      "title": "A specific branch",
+      "objective": "Pull the docs branch from origin into your main branch.",
+      "allowedCommands": ["git pull", "git status", "git log", "git branch"],
+      "startingState": {
+        "servers": ["https://example.com/team/project.git"],
+        "setup": [
+          {
+            "workspace": "teammate",
+            "commands": [
+              "git init",
+              "echo \"# Project\" > README.md",
+              "git add .",
+              "git commit -m \"Start project\"",
+              "git remote add origin https://example.com/team/project.git",
+              "git push -u origin main"
+            ]
+          },
+          "git clone https://example.com/team/project.git",
+          {
+            "workspace": "teammate",
+            "commands": [
+              "git switch -c docs",
+              "echo \"# Docs\" > docs.md",
+              "git add .",
+              "git commit -m \"Add docs\"",
+              "git push -u origin docs"
+            ]
+          }
+        ]
+      },
+      "successPredicate": { "check": "branchContains", "branch": "main", "ref": "origin/docs" },
+      "hints": [
+        "Plain git pull uses the branch main tracks: origin/main.",
+        "Give the remote and the branch name.",
+        "Run: git pull origin docs"
+      ],
+      "solution": ["git pull origin docs"],
+      "successMessage": "git pull <remote> <branch> merges any remote branch into the one you are on."
+    },
+    {
+      "id": "core.pull.var3",
+      "kind": "variation",
+      "title": "Catch up, then share",
+      "objective": "Get your teammate's new work, then commit a file called done.txt and push it.",
+      "allowedCommands": ["git pull", "git push", "git status", "git log", "git add", "git commit"],
+      "startingState": {
+        "servers": ["https://example.com/team/project.git"],
+        "setup": [
+          {
+            "workspace": "teammate",
+            "commands": [
+              "git init",
+              "echo \"# Project\" > README.md",
+              "git add .",
+              "git commit -m \"Start project\"",
+              "git remote add origin https://example.com/team/project.git",
+              "git push -u origin main"
+            ]
+          },
+          "git clone https://example.com/team/project.git",
+          {
+            "workspace": "teammate",
+            "commands": [
+              "echo \"todo\" > todo.txt",
+              "git add .",
+              "git commit -m \"Add todo list\"",
+              "git push"
+            ]
+          }
+        ]
+      },
+      "successPredicate": {
+        "all": [
+          { "check": "fileCommitted", "path": "todo.txt" },
+          { "check": "fileCommitted", "path": "done.txt" },
+          { "check": "remoteBranchMatches", "remote": "origin", "branch": "main" }
+        ]
+      },
+      "hints": [
+        "Pull first, so your commit builds on top of theirs.",
+        "Then create, stage and commit done.txt, and push.",
+        "Run: git pull, touch done.txt, git add done.txt, git commit -m \"Done\", git push"
+      ],
+      "solution": [
+        "git pull",
+        "touch done.txt",
+        "git add done.txt",
+        "git commit -m \"Done\"",
+        "git push"
+      ],
+      "successMessage": "Pulling before you start avoids a rejected push and keeps the history in a straight line."
+    }
+  ]
+}

@@ -1,0 +1,228 @@
+{
+  "conceptId": "fetch",
+  "sectionId": "core-basics",
+  "title": "Fetch",
+  "summary": "git fetch downloads new commits from a remote without changing your own branches, so you can look before you merge.",
+  "levels": [
+    {
+      "id": "core.fetch.main",
+      "kind": "main",
+      "title": "Look before you merge",
+      "briefing": "Your copy of a remote's branches, like origin/main, only updates when you ask. git fetch downloads new commits and moves origin/main forward, but leaves your own main exactly where it was.",
+      "objective": "A teammate pushed a new commit. Download it with fetch, without changing your main branch.",
+      "cheatsheet": [
+        {
+          "command": "git fetch",
+          "description": "Download new commits from origin",
+          "example": "git fetch"
+        },
+        {
+          "command": "git fetch <remote>",
+          "description": "Download from a specific remote",
+          "example": "git fetch upstream"
+        },
+        {
+          "command": "git log origin/main",
+          "description": "Look at what was downloaded",
+          "example": "git log --oneline origin/main"
+        },
+        {
+          "command": "git merge origin/main",
+          "description": "Bring the downloaded commits into your branch",
+          "example": "git merge origin/main"
+        }
+      ],
+      "allowedCommands": [
+        "git fetch",
+        "git status",
+        "git log",
+        "git branch",
+        "git merge",
+        "git switch",
+        "git remote"
+      ],
+      "startingState": {
+        "servers": ["https://example.com/team/project.git"],
+        "setup": [
+          {
+            "workspace": "teammate",
+            "commands": [
+              "git init",
+              "echo \"# Project\" > README.md",
+              "git add .",
+              "git commit -m \"Start project\"",
+              "git remote add origin https://example.com/team/project.git",
+              "git push -u origin main"
+            ]
+          },
+          "git clone https://example.com/team/project.git",
+          {
+            "workspace": "teammate",
+            "commands": [
+              "echo \"More details\" >> README.md",
+              "git commit -am \"Expand README\"",
+              "git push"
+            ]
+          }
+        ]
+      },
+      "successPredicate": {
+        "all": [
+          { "check": "commitCount", "onBranch": "origin/main", "equals": 2 },
+          { "check": "commitCount", "onBranch": "main", "equals": 1 }
+        ]
+      },
+      "hints": [
+        "git log origin/main only shows what you have already downloaded.",
+        "fetch updates origin/main and nothing else.",
+        "Run: git fetch"
+      ],
+      "solution": ["git fetch", "git log --oneline origin/main"],
+      "successMessage": "origin/main moved ahead in the graph while your main stayed put. git status now says you are behind."
+    },
+    {
+      "id": "core.fetch.var1",
+      "kind": "variation",
+      "title": "A new remote branch",
+      "objective": "A teammate pushed a new branch called experiment. Fetch it, then create your own experiment branch from it.",
+      "allowedCommands": ["git fetch", "git switch", "git branch", "git status", "git log"],
+      "startingState": {
+        "servers": ["https://example.com/team/project.git"],
+        "setup": [
+          {
+            "workspace": "teammate",
+            "commands": [
+              "git init",
+              "echo \"# Project\" > README.md",
+              "git add .",
+              "git commit -m \"Start project\"",
+              "git remote add origin https://example.com/team/project.git",
+              "git push -u origin main"
+            ]
+          },
+          "git clone https://example.com/team/project.git",
+          {
+            "workspace": "teammate",
+            "commands": [
+              "git switch -c experiment",
+              "echo \"idea\" > idea.txt",
+              "git add .",
+              "git commit -m \"Try an idea\"",
+              "git push -u origin experiment"
+            ]
+          }
+        ]
+      },
+      "successPredicate": {
+        "all": [
+          { "check": "branchExists", "name": "experiment" },
+          {
+            "check": "upstreamIs",
+            "branch": "experiment",
+            "remote": "origin",
+            "remoteBranch": "experiment"
+          }
+        ]
+      },
+      "hints": [
+        "You cannot see experiment until you fetch.",
+        "After fetching, switching to experiment creates a tracking branch.",
+        "Run: git fetch, then git switch experiment"
+      ],
+      "solution": ["git fetch", "git switch experiment"],
+      "successMessage": "fetch showed you the new branch; switch turned it into a local branch you can work on."
+    },
+    {
+      "id": "core.fetch.var2",
+      "kind": "variation",
+      "title": "Fetch, then merge",
+      "objective": "Fetch the new commit from origin, then merge origin/main into your main yourself.",
+      "allowedCommands": ["git fetch", "git merge", "git status", "git log"],
+      "startingState": {
+        "servers": ["https://example.com/team/project.git"],
+        "setup": [
+          {
+            "workspace": "teammate",
+            "commands": [
+              "git init",
+              "echo \"# Project\" > README.md",
+              "git add .",
+              "git commit -m \"Start project\"",
+              "git remote add origin https://example.com/team/project.git",
+              "git push -u origin main"
+            ]
+          },
+          "git clone https://example.com/team/project.git",
+          {
+            "workspace": "teammate",
+            "commands": [
+              "echo \"More details\" >> README.md",
+              "git commit -am \"Expand README\"",
+              "git push"
+            ]
+          }
+        ]
+      },
+      "successPredicate": {
+        "all": [
+          { "check": "refsEqual", "ref": "main", "other": "origin/main" },
+          { "check": "commitCount", "onBranch": "main", "equals": 2 }
+        ]
+      },
+      "hints": [
+        "Two steps: download, then merge.",
+        "origin/main is a branch name you can merge like any other.",
+        "Run: git fetch, then git merge origin/main"
+      ],
+      "solution": ["git fetch", "git merge origin/main"],
+      "successMessage": "Fetch plus merge is exactly what git pull does in one step."
+    },
+    {
+      "id": "core.fetch.var3",
+      "kind": "variation",
+      "title": "Another remote",
+      "objective": "This repository has a second remote called upstream. Fetch from upstream.",
+      "allowedCommands": ["git fetch", "git remote", "git status", "git log", "git branch"],
+      "startingState": {
+        "servers": [
+          "https://example.com/team/project.git",
+          "https://example.com/original/project.git"
+        ],
+        "setup": [
+          {
+            "workspace": "teammate",
+            "commands": [
+              "git init",
+              "echo \"# Project\" > README.md",
+              "git add .",
+              "git commit -m \"Start project\"",
+              "git remote add origin https://example.com/team/project.git",
+              "git push -u origin main"
+            ]
+          },
+          {
+            "workspace": "maintainer",
+            "commands": [
+              "git init",
+              "echo \"# Original\" > README.md",
+              "git add .",
+              "git commit -m \"Original project\"",
+              "git remote add origin https://example.com/original/project.git",
+              "git push -u origin main"
+            ]
+          },
+          "git clone https://example.com/team/project.git",
+          "git remote add upstream https://example.com/original/project.git"
+        ]
+      },
+      "successPredicate": { "check": "commitCount", "onBranch": "upstream/main", "min": 1 },
+      "hints": [
+        "Plain git fetch uses origin.",
+        "Name the remote after fetch.",
+        "Run: git fetch upstream"
+      ],
+      "solution": ["git fetch upstream"],
+      "successMessage": "git branch -r now lists upstream/main next to origin/main."
+    }
+  ]
+}

@@ -1,0 +1,136 @@
+{
+  "conceptId": "branch",
+  "sectionId": "core-basics",
+  "title": "Branch",
+  "summary": "A branch is a movable name for a line of commits, so you can work on something new without touching main.",
+  "levels": [
+    {
+      "id": "core.branch.main",
+      "kind": "main",
+      "title": "Make a branch",
+      "briefing": "A branch is just a label pointing at a commit. git branch <name> creates a new label at the commit you are on. It does not switch to it: HEAD, the marker for where you are, stays on your current branch.",
+      "objective": "Create a branch called feature, and stay on main.",
+      "cheatsheet": [
+        {
+          "command": "git branch",
+          "description": "List branches; * marks the current one",
+          "example": "git branch"
+        },
+        {
+          "command": "git branch <name>",
+          "description": "Create a branch here",
+          "example": "git branch feature"
+        },
+        {
+          "command": "git branch <name> <start>",
+          "description": "Create a branch at another commit",
+          "example": "git branch hotfix HEAD~1"
+        },
+        {
+          "command": "git branch -d <name>",
+          "description": "Delete a merged branch",
+          "example": "git branch -d old"
+        }
+      ],
+      "allowedCommands": ["git branch", "git status", "git log"],
+      "startingState": {
+        "files": { "app.js": "v1\n" },
+        "setup": [
+          "git init",
+          "git add .",
+          "git commit -m \"First version\"",
+          "echo v2 > app.js",
+          "git commit -am \"Second version\""
+        ]
+      },
+      "successPredicate": {
+        "all": [
+          { "check": "branchExists", "name": "feature" },
+          { "check": "headPointsTo", "ref": "main" }
+        ]
+      },
+      "hints": [
+        "git branch with a name creates a branch.",
+        "It will point at the same commit as main.",
+        "Run: git branch feature"
+      ],
+      "solution": ["git branch feature"],
+      "successMessage": "The graph shows feature and main on the same commit. HEAD is still on main."
+    },
+    {
+      "id": "core.branch.var1",
+      "kind": "variation",
+      "title": "Two branches",
+      "objective": "Create two branches: bugfix and experiment.",
+      "allowedCommands": ["git branch", "git status", "git log"],
+      "startingState": {
+        "files": { "app.js": "v1\n" },
+        "setup": ["git init", "git add .", "git commit -m \"First version\""]
+      },
+      "successPredicate": {
+        "all": [
+          { "check": "branchExists", "name": "bugfix" },
+          { "check": "branchExists", "name": "experiment" }
+        ]
+      },
+      "hints": [
+        "Each branch needs its own git branch command.",
+        "Both will point at the current commit.",
+        "Run: git branch bugfix, then git branch experiment"
+      ],
+      "solution": ["git branch bugfix", "git branch experiment"],
+      "successMessage": "Branches cost almost nothing, so it is normal to have several."
+    },
+    {
+      "id": "core.branch.var2",
+      "kind": "variation",
+      "title": "Clean up",
+      "objective": "The branch old-idea is fully merged and no longer needed. Delete it.",
+      "allowedCommands": ["git branch", "git status", "git log"],
+      "startingState": {
+        "files": { "app.js": "v1\n" },
+        "setup": ["git init", "git add .", "git commit -m \"First version\"", "git branch old-idea"]
+      },
+      "successPredicate": {
+        "all": [
+          { "not": { "check": "branchExists", "name": "old-idea" } },
+          { "check": "branchExists", "name": "main" }
+        ]
+      },
+      "hints": [
+        "git branch lists old-idea next to main.",
+        "The delete flag is -d.",
+        "Run: git branch -d old-idea"
+      ],
+      "solution": ["git branch -d old-idea"],
+      "successMessage": "Deleting a branch only removes the label. Its commits are still in main's history."
+    },
+    {
+      "id": "core.branch.var3",
+      "kind": "variation",
+      "title": "Branch from the past",
+      "objective": "Create a branch called hotfix that points at the commit before the latest one.",
+      "allowedCommands": ["git branch", "git status", "git log"],
+      "startingState": {
+        "files": { "app.js": "v1\n" },
+        "setup": [
+          "git init",
+          "git add .",
+          "git commit -m \"First version\"",
+          "echo v2 > app.js",
+          "git commit -am \"Second version\"",
+          "echo v3 > app.js",
+          "git commit -am \"Third version\""
+        ]
+      },
+      "successPredicate": { "check": "refsEqual", "ref": "hotfix", "other": "main~1" },
+      "hints": [
+        "git branch can take a second argument: where the branch should start.",
+        "HEAD~1 means \"one commit before HEAD\".",
+        "Run: git branch hotfix HEAD~1"
+      ],
+      "solution": ["git branch hotfix HEAD~1"],
+      "successMessage": "A branch can start at any commit, not just the latest one."
+    }
+  ]
+}

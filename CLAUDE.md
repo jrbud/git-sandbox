@@ -161,6 +161,9 @@ Mastery model: a concept is "mastered" once all of its variation levels are comp
 - Each concept file is `{ conceptId, sectionId, title, summary, levels: [main, ...variations] }`, where `summary` is one or two sentences on what the git feature does. `sections.json` lists each section's concepts in order. The loader rejects malformed content with every problem listed by file and field, including setup commands that fail and objectives already met by the starting state.
 - Unlocking: a concept's main level opens when the previous concept's main level is complete; its variations open once its own main level is complete; a section opens when the section named in its `unlock` rule has every main level complete.
 - Replaying a level keeps the best result: once a level is completed without hints, it stays recorded as hint-free.
+- Every level also carries a `solution`: a command list that solves it. It is never shown to players; tests play it under the level's own `allowedCommands` to prove the level is solvable.
+
+**As implemented (Phase 4).** Core Basics teaches its 16 concepts in this order: init, add, commit, status, log, diff, .gitignore, config, branch, switch (checkout/switch), merge, clone, remote, push, fetch, pull. Each has one lesson and three practice levels (64 levels). `conceptObjectives.json` maps each Section 2 objective to its concepts, and every concept belongs to exactly one objective. Read-only commands (status, log, diff) are taught through goals that need their output, such as writing the number of commits into a file.
 
 ## 7. UI/UX Requirements
 

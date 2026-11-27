@@ -41,6 +41,8 @@ export type Predicate =
   | { check: 'remoteBranchMatches'; remote: string; branch: string; localBranch?: string }
   | { check: 'upstreamIs'; branch: string; remote: string; remoteBranch: string }
   | { check: 'lastCommitMessage'; onBranch?: string; equals?: string; contains?: string }
+  /** Who made the latest commit on a branch (default: HEAD). */
+  | { check: 'lastCommitAuthor'; onBranch?: string; name?: string; email?: string }
 
 type CheckName = Extract<Predicate, { check: string }>['check']
 
@@ -66,6 +68,7 @@ export const PREDICATE_CHECKS: Record<CheckName, readonly string[]> = {
   remoteBranchMatches: ['remote', 'branch'],
   upstreamIs: ['branch', 'remote', 'remoteBranch'],
   lastCommitMessage: [],
+  lastCommitAuthor: [],
 }
 
 /** Problems with a predicate written in a level file, as readable messages ([] when valid). */
@@ -194,6 +197,14 @@ export function evaluatePredicate(world: World, predicate: Predicate): boolean {
       if (message === undefined) return false
       if (predicate.equals !== undefined && message !== predicate.equals) return false
       if (predicate.contains !== undefined && !message.includes(predicate.contains)) return false
+      return true
+    }
+    case 'lastCommitAuthor': {
+      const tip = tipOf(world, predicate.onBranch)
+      const author = tip === undefined ? undefined : repo.commits.get(tip)?.author
+      if (author === undefined) return false
+      if (predicate.name !== undefined && author.name !== predicate.name) return false
+      if (predicate.email !== undefined && author.email !== predicate.email) return false
       return true
     }
     default: {

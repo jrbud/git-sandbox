@@ -67,6 +67,7 @@ export function createSampleLevel(): Level {
       'Once notes.txt exists, stage it, then commit it with a message.',
       'Run: echo "my notes" > notes.txt, then git add notes.txt, then git commit -m "Add notes"',
     ],
+    solution: ['echo "my notes" > notes.txt', 'git add notes.txt', 'git commit -m "Add notes"'],
     successMessage:
       'You staged notes.txt and saved it in a new commit. That commit is now part of your project history, which you can see in the graph.',
   }

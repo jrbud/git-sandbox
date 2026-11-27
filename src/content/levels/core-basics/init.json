@@ -1,0 +1,99 @@
+{
+  "conceptId": "init",
+  "sectionId": "core-basics",
+  "title": "Init",
+  "summary": "git init turns a folder into a repository, so git can start tracking it.",
+  "levels": [
+    {
+      "id": "core.init.main",
+      "kind": "main",
+      "title": "Start a repository",
+      "briefing": "A repository is a folder that git is watching. git init creates a hidden .git folder where git will keep every version of your project. Nothing is saved yet: init only starts the tracking.",
+      "objective": "Turn this folder into a git repository.",
+      "cheatsheet": [
+        {
+          "command": "git init",
+          "description": "Make the current folder a repository",
+          "example": "git init"
+        },
+        { "command": "git status", "description": "Check what git sees", "example": "git status" },
+        {
+          "command": "ls -a",
+          "description": "List files, including hidden ones like .git",
+          "example": "ls -a"
+        }
+      ],
+      "allowedCommands": ["git init", "git status"],
+      "startingState": { "files": { "README.md": "# Notes\n" } },
+      "successPredicate": { "check": "isInitialized" },
+      "hints": [
+        "Right now git status says this is not a repository.",
+        "One git command creates a repository in the current folder.",
+        "Run: git init"
+      ],
+      "solution": ["git init"],
+      "successMessage": "The folder is now a repository. README.md shows up as untracked: git can see it, but nothing has been saved yet."
+    },
+    {
+      "id": "core.init.var1",
+      "kind": "variation",
+      "title": "From an empty folder",
+      "objective": "Create a repository in this empty folder, then create a file called notes.txt.",
+      "allowedCommands": ["git init", "git status"],
+      "startingState": {},
+      "successPredicate": {
+        "all": [{ "check": "isInitialized" }, { "check": "fileUntracked", "path": "notes.txt" }]
+      },
+      "hints": [
+        "Start the repository first, then make the file.",
+        "touch creates an empty file.",
+        "Run: git init, then touch notes.txt"
+      ],
+      "solution": ["git init", "touch notes.txt"],
+      "successMessage": "A new file in a repository starts out untracked until you stage it."
+    },
+    {
+      "id": "core.init.var2",
+      "kind": "variation",
+      "title": "An existing project",
+      "objective": "This project has files but no repository. Make it a repository.",
+      "allowedCommands": ["git init", "git status"],
+      "startingState": {
+        "files": {
+          "index.html": "<h1>Hello</h1>\n",
+          "src/app.js": "console.log('hi')\n",
+          "src/style.css": "body { margin: 0; }\n"
+        }
+      },
+      "successPredicate": { "check": "isInitialized" },
+      "hints": [
+        "Existing files are fine: git init does not change them.",
+        "Use the same command as before.",
+        "Run: git init"
+      ],
+      "solution": ["git init"],
+      "successMessage": "git init works in folders that already have files, and leaves them untouched."
+    },
+    {
+      "id": "core.init.var3",
+      "kind": "variation",
+      "title": "Init and add a file",
+      "objective": "Make this folder a repository and create an empty file called TODO.",
+      "allowedCommands": ["git init", "git status"],
+      "startingState": { "files": { "README.md": "# Plans\n" } },
+      "successPredicate": {
+        "all": [
+          { "check": "isInitialized" },
+          { "check": "fileInWorkingDirectory", "path": "TODO", "content": "" }
+        ]
+      },
+      "hints": [
+        "Two steps: start the repository, and create the file.",
+        "touch makes an empty file.",
+        "Run: git init, then touch TODO"
+      ],
+      "solution": ["git init", "touch TODO"],
+      "successMessage": "The repository is ready, and git can see both files."
+    }
+  ]
+}

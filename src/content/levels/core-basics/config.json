@@ -1,0 +1,141 @@
+{
+  "conceptId": "config",
+  "sectionId": "core-basics",
+  "title": "Config",
+  "summary": "git config sets your name and email, which git records as the author of every commit you make.",
+  "levels": [
+    {
+      "id": "core.config.main",
+      "kind": "main",
+      "title": "Who are you?",
+      "briefing": "Every commit records an author, so git needs your name and email before you can commit. Without --global the setting applies to this repository only; with --global it applies to all of them.",
+      "objective": "Git does not know who you are yet. Set your name and email, then commit the staged file.",
+      "cheatsheet": [
+        {
+          "command": "git config user.name \"<name>\"",
+          "description": "Set your name for this repository",
+          "example": "git config user.name \"Sam Lee\""
+        },
+        {
+          "command": "git config user.email \"<email>\"",
+          "description": "Set your email for this repository",
+          "example": "git config user.email \"sam@example.com\""
+        },
+        {
+          "command": "git config --global <key> <value>",
+          "description": "Set it for every repository",
+          "example": "git config --global user.name \"Sam Lee\""
+        },
+        {
+          "command": "git config <key>",
+          "description": "Read a setting",
+          "example": "git config user.name"
+        }
+      ],
+      "allowedCommands": ["git config", "git status", "git add", "git commit", "git log"],
+      "startingState": {
+        "globalConfig": {},
+        "files": { "a.txt": "hello\n" },
+        "setup": ["git init", "git add a.txt"]
+      },
+      "successPredicate": {
+        "all": [
+          { "check": "configEquals", "key": "user.name" },
+          { "check": "configEquals", "key": "user.email" },
+          { "check": "commitCount", "min": 1 }
+        ]
+      },
+      "hints": [
+        "Try git commit first: the error tells you what is missing.",
+        "Set user.name and user.email with git config, then commit.",
+        "Run: git config user.name \"Sam\", git config user.email \"sam@example.com\", git commit -m \"First\""
+      ],
+      "solution": [
+        "git config user.name \"Sam\"",
+        "git config user.email \"sam@example.com\"",
+        "git commit -m \"First\""
+      ],
+      "successMessage": "Your commit now carries your name and email. git log shows them on the Author line."
+    },
+    {
+      "id": "core.config.var1",
+      "kind": "variation",
+      "title": "For every repository",
+      "objective": "Set your name and email for every repository with --global, then commit the staged file.",
+      "allowedCommands": ["git config", "git status", "git commit"],
+      "startingState": {
+        "globalConfig": {},
+        "files": { "a.txt": "hello\n" },
+        "setup": ["git init", "git add a.txt"]
+      },
+      "successPredicate": {
+        "all": [
+          { "check": "configEquals", "key": "user.name", "scope": "global" },
+          { "check": "configEquals", "key": "user.email", "scope": "global" },
+          { "check": "commitCount", "min": 1 }
+        ]
+      },
+      "hints": [
+        "--global goes right after git config.",
+        "Set both user.name and user.email that way.",
+        "Run: git config --global user.name \"Sam\", git config --global user.email \"sam@example.com\", git commit -m \"First\""
+      ],
+      "solution": [
+        "git config --global user.name \"Sam\"",
+        "git config --global user.email \"sam@example.com\"",
+        "git commit -m \"First\""
+      ],
+      "successMessage": "Global settings follow you into every repository on this computer."
+    },
+    {
+      "id": "core.config.var2",
+      "kind": "variation",
+      "title": "Just this repository",
+      "objective": "Commits in this repository should be authored by \"Docs Bot\". Set that name for this repository only, then commit the staged file.",
+      "allowedCommands": ["git config", "git status", "git commit", "git log"],
+      "startingState": {
+        "files": { "guide.md": "# Guide\n" },
+        "setup": ["git init", "git add guide.md"]
+      },
+      "successPredicate": {
+        "all": [
+          { "check": "configEquals", "key": "user.name", "value": "Docs Bot", "scope": "local" },
+          { "check": "configEquals", "key": "user.name", "value": "Player", "scope": "global" },
+          { "check": "lastCommitAuthor", "name": "Docs Bot" }
+        ]
+      },
+      "hints": [
+        "Leave out --global so only this repository changes.",
+        "A repository setting overrides the global one.",
+        "Run: git config user.name \"Docs Bot\", git commit -m \"Add guide\""
+      ],
+      "solution": ["git config user.name \"Docs Bot\"", "git commit -m \"Add guide\""],
+      "successMessage": "Repository settings win over global ones, but only inside this repository."
+    },
+    {
+      "id": "core.config.var3",
+      "kind": "variation",
+      "title": "Fix a typo",
+      "objective": "Your email is set to sam@exmaple.com by mistake. Change it to sam@example.com, then commit the staged file.",
+      "allowedCommands": ["git config", "git status", "git commit", "git log"],
+      "startingState": {
+        "globalConfig": { "user.name": "Sam", "user.email": "sam@exmaple.com" },
+        "files": { "a.txt": "hello\n" },
+        "setup": ["git init", "git add a.txt"]
+      },
+      "successPredicate": {
+        "all": [
+          { "check": "configEquals", "key": "user.email", "value": "sam@example.com" },
+          { "check": "lastCommitAuthor", "email": "sam@example.com" }
+        ]
+      },
+      "hints": [
+        "Read the current value with git config user.email.",
+        "Setting a key again replaces the old value.",
+        "Run: git config --global user.email \"sam@example.com\", git commit -m \"First\""
+      ],
+      "solution": ["git config --global user.email \"sam@example.com\"", "git commit -m \"First\""],
+      "successMessage": "Commits use whatever identity is set at the moment you commit."
+    }
+  ]
+}

@@ -1,0 +1,171 @@
+{
+  "conceptId": "merge",
+  "sectionId": "core-basics",
+  "title": "Merge",
+  "summary": "git merge brings another branch's commits into your current branch, either by moving forward or with a merge commit.",
+  "levels": [
+    {
+      "id": "core.merge.main",
+      "kind": "main",
+      "title": "Fast-forward",
+      "briefing": "git merge <branch> brings that branch's work into the branch you are on. If your branch has no new commits of its own, git just moves it forward: a fast-forward. If both branches have new commits, git creates a merge commit with two parents.",
+      "objective": "The feature branch has a new commit. Merge it into main.",
+      "cheatsheet": [
+        {
+          "command": "git merge <branch>",
+          "description": "Merge a branch into the current one",
+          "example": "git merge feature"
+        },
+        {
+          "command": "git merge --no-ff <branch>",
+          "description": "Always create a merge commit",
+          "example": "git merge --no-ff feature"
+        },
+        {
+          "command": "git switch <branch>",
+          "description": "Move to the branch that should receive the work",
+          "example": "git switch main"
+        }
+      ],
+      "allowedCommands": [
+        "git merge",
+        "git switch",
+        "git checkout",
+        "git branch",
+        "git status",
+        "git log",
+        "git add",
+        "git commit"
+      ],
+      "startingState": {
+        "files": { "app.js": "v1\n" },
+        "setup": [
+          "git init",
+          "git add .",
+          "git commit -m \"First version\"",
+          "git switch -c feature",
+          "echo \"search\" > search.js",
+          "git add .",
+          "git commit -m \"Add search\"",
+          "git switch main"
+        ]
+      },
+      "successPredicate": {
+        "all": [
+          { "check": "branchContains", "branch": "main", "ref": "feature" },
+          { "check": "headPointsTo", "ref": "main" }
+        ]
+      },
+      "hints": [
+        "You are already on main, the branch that should receive the work.",
+        "git merge takes the name of the branch to bring in.",
+        "Run: git merge feature"
+      ],
+      "solution": ["git merge feature"],
+      "successMessage": "main had nothing new, so git fast-forwarded it to feature's commit. No merge commit was needed."
+    },
+    {
+      "id": "core.merge.var1",
+      "kind": "variation",
+      "title": "A merge commit",
+      "objective": "main and feature both have new commits. Merge feature into main.",
+      "allowedCommands": ["git merge", "git switch", "git branch", "git status", "git log"],
+      "startingState": {
+        "files": { "app.js": "v1\n" },
+        "setup": [
+          "git init",
+          "git add .",
+          "git commit -m \"First version\"",
+          "git switch -c feature",
+          "echo \"search\" > search.js",
+          "git add .",
+          "git commit -m \"Add search\"",
+          "git switch main",
+          "echo \"# App\" > README.md",
+          "git add .",
+          "git commit -m \"Add README\""
+        ]
+      },
+      "successPredicate": {
+        "all": [
+          { "check": "isMergeCommit", "ref": "main" },
+          { "check": "branchContains", "branch": "main", "ref": "feature" }
+        ]
+      },
+      "hints": [
+        "The branches have split, so a fast-forward is not possible.",
+        "Merge as usual; git will make a merge commit.",
+        "Run: git merge feature"
+      ],
+      "solution": ["git merge feature"],
+      "successMessage": "The merge commit has two parents, joining both lines of work in the graph."
+    },
+    {
+      "id": "core.merge.var2",
+      "kind": "variation",
+      "title": "Keep the history",
+      "objective": "Merge feature into main with a merge commit, even though a fast-forward is possible.",
+      "allowedCommands": ["git merge", "git switch", "git branch", "git status", "git log"],
+      "startingState": {
+        "files": { "app.js": "v1\n" },
+        "setup": [
+          "git init",
+          "git add .",
+          "git commit -m \"First version\"",
+          "git switch -c feature",
+          "echo \"login\" > login.js",
+          "git add .",
+          "git commit -m \"Add login\"",
+          "git switch main"
+        ]
+      },
+      "successPredicate": {
+        "all": [
+          { "check": "isMergeCommit", "ref": "main" },
+          { "check": "branchContains", "branch": "main", "ref": "feature" }
+        ]
+      },
+      "hints": [
+        "A normal merge here would fast-forward.",
+        "There is a flag that turns the fast-forward off.",
+        "Run: git merge --no-ff feature"
+      ],
+      "solution": ["git merge --no-ff feature"],
+      "successMessage": "--no-ff keeps a visible record that the feature was developed on its own branch."
+    },
+    {
+      "id": "core.merge.var3",
+      "kind": "variation",
+      "title": "Update a branch",
+      "objective": "main has moved on. Bring main's new commit into the feature branch.",
+      "allowedCommands": [
+        "git merge",
+        "git switch",
+        "git checkout",
+        "git branch",
+        "git status",
+        "git log"
+      ],
+      "startingState": {
+        "files": { "app.js": "v1\n" },
+        "setup": [
+          "git init",
+          "git add .",
+          "git commit -m \"First version\"",
+          "git branch feature",
+          "echo \"# App\" > README.md",
+          "git add .",
+          "git commit -m \"Add README\""
+        ]
+      },
+      "successPredicate": { "check": "branchContains", "branch": "feature", "ref": "main" },
+      "hints": [
+        "Merging always brings work into the branch you are on.",
+        "Switch to feature first, then merge main.",
+        "Run: git switch feature, then git merge main"
+      ],
+      "solution": ["git switch feature", "git merge main"],
+      "successMessage": "Merging main into your branch keeps it up to date while you work."
+    }
+  ]
+}
