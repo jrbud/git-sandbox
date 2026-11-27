@@ -57,7 +57,7 @@ Each level should map to exactly one objective above, so coverage gaps are easy 
 
 1. **Briefing.** A short panel states the concept in plain language ("A commit is a snapshot...") and the level's objective ("Make 2 commits, then create a branch called `feature`").
 2. **Starting state.** The level loads a predefined repo state: working directory files, staging area contents, commit graph, branches, and (if relevant) a simulated remote.
-3. **Play.** The player types git commands into a terminal-style input. Only the commands/flags whitelisted for that level are accepted; anything else is explained ("not available in this level") rather than silently failing.
+3. **Play.** The player types git commands into a terminal-style input. Only the commands/flags whitelisted for that level are accepted; anything else is explained ("not available in this level") rather than silently failing. To create and change files, the player has two always-available tools that are not limited by `allowedCommands`: a few basic file commands in the same terminal (`touch`, `echo "text" > file`, `echo "text" >> file`, `cat`, `ls`, `rm`), and a file editor panel for opening, editing, creating and deleting files. Both act on the same simulated working directory that git sees.
 4. **Live visualization.** A commit graph view and a working-directory/staging-area view update after every command, so the player sees cause and effect immediately (see Section 7).
 5. **Objective check.** After each command, the engine checks the objective predicate against the simulated repo state. On success: a short explanation of *why* it worked, then "Next Level."
 6. **Hints.** A hint system reveals increasingly specific nudges (concept reminder → which command family → the exact command) if the player is stuck, without being required reading.
@@ -163,7 +163,7 @@ Visual theme: dark terminal aesthetic as the default (monospace fonts, dark back
 Main screens:
 
 1. Level-select: a path/map layout, levels shown as nodes along a winding path, grouped visually by concept, with locked nodes greyed out. Overall section progress bar at the top; per-concept mastery indicators (Mastered / Mastered with assistance / In progress / Not started) shown alongside each concept's node cluster.
-2. Level/play screen: an objective banner; a toggleable cheatsheet panel (always reachable mid-level via a button/icon, not just shown once); the terminal input/output area; the commit-graph visualization; a working-directory/staging-area view; a Reset Level button; a hint button (hidden-by-default on variations, always visible on main levels); and, on variations, no cheatsheet panel at all.
+2. Level/play screen: an objective banner; a toggleable cheatsheet panel (always reachable mid-level via a button/icon, not just shown once); the terminal input/output area; the commit-graph visualization; a working-directory/staging-area view; a file editor panel; a Reset Level button; a hint button (hidden-by-default on variations, always visible on main levels); and, on variations, no cheatsheet panel at all.
 3. Free Play (sandbox) screen: an open repo with the full command set unlocked, no objective, no grading, just a place to experiment. Reachable from the main menu, separate from the level progression.
 
 Terminal behavior: feels like a real terminal, type a command, press Enter, it runs immediately and prints output. Up-arrow recalls previous commands in that level's session. Tab triggers autocomplete/suggestions limited to that level's allowed commands and relevant flags. A command outside the level's whitelist prints a realistic-looking git error plus one plain-language sentence explaining why it's unavailable here.
@@ -279,18 +279,20 @@ Naming/branding, visual polish beyond the MVP palette, and any additional gamifi
 
 ### Phase 2: UI Components
 
-1. Build the Terminal component: input field, output log, press-Enter-to-run execution. Test: typing a command and pressing Enter calls the dispatcher and renders its output.
-2. Add command history (up-arrow recall) to the Terminal. Test: pressing up-arrow cycles through previously entered commands in order.
-3. Add Tab-completion limited to the active level's `allowedCommands`. Test: Tab completes/suggests only whitelisted commands and relevant flags, not arbitrary git commands.
-4. Build the CommitGraph visualization component rendering a Repo's commits/branches/HEAD as a clean node-and-line diagram. Test: renders the correct number of nodes/edges and correct HEAD marker for a sample repo state, including non-color indicators for branch identity.
-5. Build the WorkingDirectory/StagingArea view component. Test: renders correct file lists for a sample repo state across tracked/staged/untracked.
-6. Build the toggleable Cheatsheet panel component. Test: opens/closes on toggle; renders only on levels whose data includes a cheatsheet.
-7. Build the HintPanel component with ordered, escalating hint reveal. Test: each reveal shows the next hint in sequence; records whether a hint was shown (for Section 6's mastery model) on variation levels.
-8. Build the ObjectiveBanner component. Test: renders the active level's objective text.
-9. Build the Reset Level control. Test: clicking it restores the level's exact starting repo state.
-10. Compose the above into a full Level/Play screen wired to one hardcoded sample level. Test: an end-to-end test runs a known command sequence through the Terminal and asserts the screen transitions to a "Level Complete" state when the predicate is satisfied.
-11. Build the light/dark theme system (tokens + toggle) and apply it across all components built so far. Test: toggling theme updates rendered theme tokens; both themes meet contrast requirements.
-12. Accessibility pass on all components built so far: screen reader labels, full keyboard navigation, colorblind-safe indicators. Test: automated accessibility assertions (e.g. axe-core via a Vitest/RTL integration) pass with no critical violations.
+1. Add the basic file commands to the engine (`touch`, `echo "text" > file`, `echo "text" >> file`, `cat`, `ls`, `rm`), run through the same dispatcher and always allowed regardless of a level's `allowedCommands`. Test: each command creates, overwrites, appends to, prints, lists or removes files in the simulated working directory with shell-like output and errors; any other non-git program still gets "command not found".
+2. Build the Terminal component: input field, output log, press-Enter-to-run execution. Test: typing a command and pressing Enter calls the dispatcher and renders its output.
+3. Add command history (up-arrow recall) to the Terminal. Test: pressing up-arrow cycles through previously entered commands in order.
+4. Add Tab-completion limited to the active level's `allowedCommands` (plus the file commands). Test: Tab completes/suggests only whitelisted commands and relevant flags, not arbitrary git commands.
+5. Build the CommitGraph visualization component rendering a Repo's commits/branches/HEAD as a clean node-and-line diagram. Test: renders the correct number of nodes/edges and correct HEAD marker for a sample repo state, including non-color indicators for branch identity.
+6. Build the WorkingDirectory/StagingArea view component. Test: renders correct file lists for a sample repo state across tracked/staged/untracked.
+7. Build the FileEditor panel: list working-directory files, open one, edit and save it, create a new file, delete a file. Test: saving, creating and deleting update the simulated working directory, so the change shows up in `git status` and the WorkingDirectory/StagingArea view.
+8. Build the toggleable Cheatsheet panel component. Test: opens/closes on toggle; renders only on levels whose data includes a cheatsheet.
+9. Build the HintPanel component with ordered, escalating hint reveal. Test: each reveal shows the next hint in sequence; records whether a hint was shown (for Section 6's mastery model) on variation levels.
+10. Build the ObjectiveBanner component. Test: renders the active level's objective text.
+11. Build the Reset Level control. Test: clicking it restores the level's exact starting repo state.
+12. Compose the above into a full Level/Play screen wired to one hardcoded sample level. Test: an end-to-end test runs a known command sequence through the Terminal (including a file edit) and asserts the screen transitions to a "Level Complete" state when the predicate is satisfied.
+13. Build the light/dark theme system (tokens + toggle) and apply it across all components built so far. Test: toggling theme updates rendered theme tokens; both themes meet contrast requirements.
+14. Accessibility pass on all components built so far: screen reader labels, full keyboard navigation, colorblind-safe indicators. Test: automated accessibility assertions (e.g. axe-core via a Vitest/RTL integration) pass with no critical violations.
 
 ### Phase 3: Content Infrastructure & Progression
 
