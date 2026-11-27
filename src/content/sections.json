@@ -3,8 +3,7 @@
     {
       "id": "core-basics",
       "title": "Core Basics",
-      "description": "Snapshots, branches and remotes: everything you need to start using git.",
-      "icon": "🌱",
+      "description": "Commits, branches and remotes.",
       "concepts": ["commit"],
       "unlock": { "type": "none" }
     }

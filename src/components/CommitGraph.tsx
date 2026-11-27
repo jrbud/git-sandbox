@@ -6,7 +6,7 @@ import { layoutGraph, type GraphNode } from './graphLayout'
 
 const COLUMN_WIDTH = 72
 const LANE_HEIGHT = 64
-/** Wide enough that a "HEAD → main" label on the first commit isn't clipped. */
+/** Wide enough that a "HEAD -> main" label on the first commit isn't clipped. */
 const PADDING_X = 64
 const PADDING_TOP = 44
 const RADIUS = 9
@@ -36,7 +36,7 @@ export function CommitGraph({ repo }: { repo: Repo }) {
     return (
       <section className="panel commit-graph" aria-label="Commit graph">
         <h2 className="panel-title">Commit graph</h2>
-        <p className="panel-empty">Not a git repository yet. Run git init to start one.</p>
+        <p className="panel-empty">Not a git repository. Run git init.</p>
       </section>
     )
   }
@@ -44,9 +44,7 @@ export function CommitGraph({ repo }: { repo: Repo }) {
     return (
       <section className="panel commit-graph" aria-label="Commit graph">
         <h2 className="panel-title">Commit graph</h2>
-        <p className="panel-empty">
-          No commits yet. HEAD is on {branch ?? 'a detached commit'}, waiting for the first commit.
-        </p>
+        <p className="panel-empty">No commits yet.</p>
       </section>
     )
   }
@@ -118,7 +116,7 @@ export function CommitGraph({ repo }: { repo: Repo }) {
                 {(node.isHead || node.refs.length > 0) && (
                   <text x={x} y={y - RADIUS - 10} textAnchor="middle" className="graph-refs">
                     {node.isHead && (
-                      <tspan className="graph-head">{detached ? 'HEAD' : 'HEAD →'} </tspan>
+                      <tspan className="graph-head">{detached ? 'HEAD' : 'HEAD ->'} </tspan>
                     )}
                     {node.refs.map((ref, i) => (
                       <tspan
@@ -127,7 +125,7 @@ export function CommitGraph({ repo }: { repo: Repo }) {
                         className={ref.kind === 'remote' ? 'graph-ref-remote' : 'graph-ref-branch'}
                       >
                         {i > 0 ? ', ' : ''}
-                        {ref.kind === 'remote' ? `⇡${ref.name}` : ref.name}
+                        {ref.name}
                       </tspan>
                     ))}
                   </text>

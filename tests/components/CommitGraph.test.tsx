@@ -52,7 +52,7 @@ describe('CommitGraph', () => {
     expect(markers).toHaveLength(1)
     const headNode = markers[0].closest('[data-testid="commit-node"]')!
     expect(headNode.getAttribute('data-commit')).toBe(world.repo.branches.get('main'))
-    expect(headNode).toHaveTextContent('HEAD →')
+    expect(headNode).toHaveTextContent('HEAD ->')
   })
 
   it('labels branches by name and gives each lane its own dash pattern, not just a colour', () => {
@@ -105,7 +105,7 @@ describe('CommitGraph', () => {
 
   it('explains the empty states', () => {
     const { rerender } = render(<CommitGraph repo={createWorld().repo} />)
-    expect(screen.getByText(/Not a git repository yet/)).toBeInTheDocument()
+    expect(screen.getByText(/Not a git repository/)).toBeInTheDocument()
     rerender(<CommitGraph repo={build(['git init']).repo} />)
     expect(screen.getByText(/No commits yet/)).toBeInTheDocument()
   })

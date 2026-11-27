@@ -101,7 +101,6 @@ export function FileEditor({ files, onSave, onDelete }: FileEditorProps) {
             </div>
             {error && (
               <p id={errorId} className="form-error" role="alert">
-                <span aria-hidden="true">✖ </span>
                 {error}
               </p>
             )}
@@ -109,7 +108,7 @@ export function FileEditor({ files, onSave, onDelete }: FileEditorProps) {
         </nav>
         <div className="file-editor-pane">
           {open === null ? (
-            <p className="panel-empty">Pick a file to view or edit it.</p>
+            <p className="panel-empty">No file open.</p>
           ) : (
             <>
               <label htmlFor={textareaId} className="file-editor-label">
