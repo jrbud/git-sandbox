@@ -1,0 +1,11 @@
+:root {
+  font-family: ui-monospace, 'Cascadia Code', 'Fira Code', Menlo, Consolas, monospace;
+  color-scheme: dark;
+  background: #0f1115;
+  color: #e6e6e6;
+}
+
+body {
+  margin: 0;
+  padding: 2rem;
+}
